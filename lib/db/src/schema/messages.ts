@@ -9,6 +9,7 @@ export const messagesTable = pgTable("messages", {
   conversationId: integer("conversation_id").notNull().references(() => conversationsTable.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   messageType: text("message_type").notNull().default("incoming"),
+  deliveryStatus: text("delivery_status").notNull().default("sent"),
   senderId: integer("sender_id").references(() => usersTable.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

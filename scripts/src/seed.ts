@@ -1,11 +1,11 @@
 import { db, usersTable, contactsTable, conversationsTable, messagesTable } from "@workspace/db";
-import bcrypt from "bcryptjs";
+import argon2 from "argon2";
 
 async function seed() {
   console.log("Seeding database...");
 
-  const adminHash = await bcrypt.hash("admin123", 10);
-  const agentHash = await bcrypt.hash("agent123", 10);
+  const adminHash = await argon2.hash("admin123", { type: argon2.argon2id });
+  const agentHash = await argon2.hash("agent123", { type: argon2.argon2id });
 
   const [admin] = await db.insert(usersTable).values({
     name: "Admin Silva",
@@ -89,40 +89,35 @@ async function seed() {
   console.log("Conversations seeded:", conversations.length);
 
   await db.insert(messagesTable).values([
-    { conversationId: conversations[0].id, content: "Olá! Estou tendo problemas para fazer login no sistema. Aparece um erro 401.", messageType: "incoming", senderId: null },
-    { conversationId: conversations[0].id, content: "Bom dia, João! Vou verificar o que está acontecendo com a sua conta agora mesmo.", messageType: "outgoing", senderId: adminId },
-    { conversationId: conversations[0].id, content: "Encontrei o problema. Sua senha foi bloqueada por muitas tentativas. Vou resetar agora.", messageType: "outgoing", senderId: adminId },
-    { conversationId: conversations[0].id, content: "Perfeito! Consegui logar depois do reset. Muito obrigado pela ajuda!", messageType: "incoming", senderId: null },
-    { conversationId: conversations[0].id, content: "Ótimo! Fico feliz em ter ajudado. Qualquer outra dúvida, pode chamar!", messageType: "outgoing", senderId: adminId },
-    { conversationId: conversations[0].id, content: "Na verdade, tenho mais uma dúvida. Como faço para adicionar novos usuários?", messageType: "incoming", senderId: null },
-    { conversationId: conversations[0].id, content: "Não tem problema! Vou te enviar o passo a passo agora.", messageType: "incoming", senderId: null },
+    { conversationId: conversations[0].id, content: "Olá! Estou tendo problemas para fazer login no sistema. Aparece um erro 401.", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[0].id, content: "Bom dia, João! Vou verificar o que está acontecendo com a sua conta agora mesmo.", messageType: "outgoing", deliveryStatus: "read", senderId: adminId },
+    { conversationId: conversations[0].id, content: "Encontrei o problema. Sua senha foi bloqueada por muitas tentativas. Vou resetar agora.", messageType: "outgoing", deliveryStatus: "read", senderId: adminId },
+    { conversationId: conversations[0].id, content: "Perfeito! Consegui logar depois do reset. Muito obrigado pela ajuda!", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[0].id, content: "Ótimo! Fico feliz em ter ajudado. Qualquer outra dúvida, pode chamar!", messageType: "outgoing", deliveryStatus: "delivered", senderId: adminId },
+    { conversationId: conversations[0].id, content: "Na verdade, tenho mais uma dúvida. Como faço para adicionar novos usuários?", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[0].id, content: "Não tem problema! Vou te enviar o passo a passo agora.", messageType: "outgoing", deliveryStatus: "sent", senderId: adminId },
 
-    { conversationId: conversations[1].id, content: "Boa tarde! Gostaria de um orçamento para o plano Enterprise.", messageType: "incoming", senderId: null },
-    { conversationId: conversations[1].id, content: "Olá, Maria! Claro, posso te ajudar com isso. Qual o tamanho da sua equipe?", messageType: "outgoing", senderId: agent1Id },
-    { conversationId: conversations[1].id, content: "Somos em 15 pessoas no time de design.", messageType: "incoming", senderId: null },
-    { conversationId: conversations[1].id, content: "Perfeito! Vou preparar uma proposta personalizada para vocês e envio ainda hoje.", messageType: "outgoing", senderId: agent1Id },
+    { conversationId: conversations[1].id, content: "Boa tarde! Gostaria de um orçamento para o plano Enterprise.", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[1].id, content: "Olá, Maria! Claro, posso te ajudar com isso. Qual o tamanho da sua equipe?", messageType: "outgoing", deliveryStatus: "read", senderId: agent1Id },
+    { conversationId: conversations[1].id, content: "Somos em 15 pessoas no time de design.", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[1].id, content: "Perfeito! Vou preparar uma proposta personalizada para vocês e envio ainda hoje.", messageType: "outgoing", deliveryStatus: "delivered", senderId: agent1Id },
 
-    { conversationId: conversations[2].id, content: "Olá! Preciso de ajuda para integrar a API do sistema no meu projeto.", messageType: "incoming", senderId: null },
-    { conversationId: conversations[2].id, content: "Oi Pedro! Pode me passar mais detalhes de qual endpoint você está tentando usar?", messageType: "outgoing", senderId: adminId },
-    { conversationId: conversations[2].id, content: "Estou tentando usar o endpoint /api/v1/messages mas não estou conseguindo autenticar.", messageType: "incoming", senderId: null },
-    { conversationId: conversations[2].id, content: "Você precisa passar o token Bearer no header Authorization. Vou te enviar um exemplo de código.", messageType: "outgoing", senderId: adminId },
-    { conversationId: conversations[2].id, content: "Funcionou perfeitamente! Muito obrigado pela ajuda rápida!", messageType: "incoming", senderId: null },
+    { conversationId: conversations[2].id, content: "Olá! Preciso de ajuda para integrar a API do sistema no meu projeto.", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[2].id, content: "Oi Pedro! Pode me passar mais detalhes de qual endpoint você está tentando usar?", messageType: "outgoing", deliveryStatus: "read", senderId: adminId },
+    { conversationId: conversations[2].id, content: "Estou tentando usar o endpoint /api/v1/messages mas não estou conseguindo autenticar.", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[2].id, content: "Você precisa passar o token Bearer no header Authorization. Vou te enviar um exemplo de código.", messageType: "outgoing", deliveryStatus: "read", senderId: adminId },
+    { conversationId: conversations[2].id, content: "Funcionou perfeitamente! Muito obrigado pela ajuda rápida!", messageType: "incoming", deliveryStatus: "read", senderId: null },
 
-    { conversationId: conversations[3].id, content: "Boa tarde. Gostaria de entender melhor como funciona a cobrança mensal.", messageType: "incoming", senderId: null },
+    { conversationId: conversations[3].id, content: "Boa tarde. Gostaria de entender melhor como funciona a cobrança mensal.", messageType: "incoming", deliveryStatus: "read", senderId: null },
 
-    { conversationId: conversations[4].id, content: "Olá! Meu contrato com vocês vence no próximo mês. Como faço para renovar?", messageType: "incoming", senderId: null },
-    { conversationId: conversations[4].id, content: "Oi, Ricardo! Que bom que está pensando na renovação! Vou verificar as condições especiais para clientes fiéis.", messageType: "outgoing", senderId: agent1Id },
-    { conversationId: conversations[4].id, content: "Temos uma promoção especial de 20% de desconto para renovações anuais.", messageType: "outgoing", senderId: agent1Id },
-    { conversationId: conversations[4].id, content: "Isso é ótimo! E tenho mais usuários para adicionar também.", messageType: "incoming", senderId: null },
-    { conversationId: conversations[4].id, content: "Perfeito! Podemos incluir mais slots no mesmo contrato.", messageType: "outgoing", senderId: agent1Id },
-    { conversationId: conversations[4].id, content: "Quantos usuários adicionais você precisa?", messageType: "outgoing", senderId: agent1Id },
-    { conversationId: conversations[4].id, content: "Mais 5 usuários. Pode ser?", messageType: "incoming", senderId: null },
+    { conversationId: conversations[4].id, content: "Olá! Meu contrato com vocês vence no próximo mês. Como faço para renovar?", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[4].id, content: "Oi, Ricardo! Que bom que está pensando na renovação! Vou verificar as condições especiais para clientes fiéis.", messageType: "outgoing", deliveryStatus: "read", senderId: agent1Id },
+    { conversationId: conversations[4].id, content: "Temos uma promoção especial de 20% de desconto para renovações anuais.", messageType: "outgoing", deliveryStatus: "read", senderId: agent1Id },
+    { conversationId: conversations[4].id, content: "Isso é ótimo! E tenho mais usuários para adicionar também.", messageType: "incoming", deliveryStatus: "read", senderId: null },
+    { conversationId: conversations[4].id, content: "Perfeito! Podemos incluir mais slots no mesmo contrato.", messageType: "outgoing", deliveryStatus: "delivered", senderId: agent1Id },
+    { conversationId: conversations[4].id, content: "Quantos usuários adicionais você precisa?", messageType: "outgoing", deliveryStatus: "sent", senderId: agent1Id },
+    { conversationId: conversations[4].id, content: "Mais 5 usuários. Pode ser?", messageType: "incoming", deliveryStatus: "read", senderId: null },
   ]);
-
-  await db.update(contactsTable).set({ conversationsCount: 1 }).where(contacts.length > 0 ? undefined : undefined);
-  for (let i = 0; i < Math.min(conversations.length, contacts.length); i++) {
-    await db.update(contactsTable).set({ conversationsCount: 1 });
-  }
 
   console.log("Messages seeded!");
   console.log("\n=== SEED COMPLETE ===");

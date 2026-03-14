@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@workspace/db": "workspace:*",
+    "argon2": "^0.44.0",
     "bcryptjs": "^2.4.3"
   },
   "devDependencies": {

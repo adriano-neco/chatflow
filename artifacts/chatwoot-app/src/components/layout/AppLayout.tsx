@@ -7,7 +7,7 @@ import { Avatar } from '@/components/ui';
 import { useAuth } from '@/hooks/use-app-data';
 
 const NAV_ITEMS = [
-  { icon: MessageSquare, label: 'Conversas', href: '/' },
+  { icon: MessageSquare, label: 'Conversas', href: '/conversations' },
   { icon: Users, label: 'Contatos', href: '/contacts' },
   { icon: PieChart, label: 'Relatórios', href: '/reports' },
   { icon: Settings, label: 'Configurações', href: '/settings' },

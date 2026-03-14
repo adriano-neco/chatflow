@@ -6,6 +6,18 @@ import { io } from "../app";
 
 const router = Router({ mergeParams: true });
 
+function formatMessage(msg: any, sender: any) {
+  return {
+    id: msg.id,
+    conversationId: msg.conversationId,
+    content: msg.content,
+    messageType: msg.messageType,
+    deliveryStatus: msg.deliveryStatus ?? "sent",
+    sender,
+    createdAt: msg.createdAt.toISOString(),
+  };
+}
+
 router.get("/", requireAuth, async (req, res) => {
   try {
     const conversationId = parseInt(req.params.id);
@@ -19,7 +31,7 @@ router.get("/", requireAuth, async (req, res) => {
         const [u] = await db.select().from(usersTable).where(eq(usersTable.id, msg.senderId)).limit(1);
         if (u) sender = { id: u.id, name: u.name, email: u.email, role: u.role, avatarUrl: u.avatarUrl ?? null, createdAt: u.createdAt.toISOString() };
       }
-      return { id: msg.id, conversationId: msg.conversationId, content: msg.content, messageType: msg.messageType, sender, createdAt: msg.createdAt.toISOString() };
+      return formatMessage(msg, sender);
     }));
 
     res.json(result);
@@ -43,7 +55,7 @@ router.post("/", requireAuth, async (req, res) => {
     const senderId = messageType === "outgoing" ? currentUser.id : null;
 
     const [msg] = await db.insert(messagesTable)
-      .values({ conversationId, content, messageType, senderId })
+      .values({ conversationId, content, messageType, deliveryStatus: "sent", senderId })
       .returning();
 
     await db.update(conversationsTable)
@@ -56,9 +68,37 @@ router.post("/", requireAuth, async (req, res) => {
       if (u) sender = { id: u.id, name: u.name, email: u.email, role: u.role, avatarUrl: u.avatarUrl ?? null, createdAt: u.createdAt.toISOString() };
     }
 
-    const result = { id: msg.id, conversationId: msg.conversationId, content: msg.content, messageType: msg.messageType, sender, createdAt: msg.createdAt.toISOString() };
+    const result = formatMessage(msg, sender);
     io.to(`conversation:${conversationId}`).emit("message:new", result);
+
+    setTimeout(async () => {
+      await db.update(messagesTable).set({ deliveryStatus: "delivered" }).where(eq(messagesTable.id, msg.id));
+      io.to(`conversation:${conversationId}`).emit("message:status", { id: msg.id, deliveryStatus: "delivered" });
+    }, 1000);
+
     res.status(201).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/:msgId/status", requireAuth, async (req, res) => {
+  try {
+    const { msgId } = req.params;
+    const { deliveryStatus } = req.body;
+    if (!["sent", "delivered", "read"].includes(deliveryStatus)) {
+      res.status(400).json({ error: "Status inválido" });
+      return;
+    }
+    const [msg] = await db.update(messagesTable)
+      .set({ deliveryStatus })
+      .where(eq(messagesTable.id, parseInt(msgId)))
+      .returning();
+
+    const conversationId = msg.conversationId;
+    io.to(`conversation:${conversationId}`).emit("message:status", { id: msg.id, deliveryStatus });
+    res.json(formatMessage(msg, null));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

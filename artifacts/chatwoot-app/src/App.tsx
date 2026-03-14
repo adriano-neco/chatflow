@@ -22,13 +22,13 @@ const queryClient = new QueryClient({
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const [, navigate] = useLocation();
   const token = localStorage.getItem('chatflow_token');
-  
+
   React.useEffect(() => {
     if (!token) {
       navigate('/login');
     }
   }, [token, navigate]);
-  
+
   if (!token) return null;
   return <Component />;
 }
@@ -38,7 +38,9 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
-      <Route path="/" component={() => <ProtectedRoute component={Conversations} />} />
+      <Route path="/" component={() => { const [, nav] = useLocation(); React.useEffect(() => nav('/conversations'), []); return null; }} />
+      <Route path="/conversations" component={() => <ProtectedRoute component={Conversations} />} />
+      <Route path="/conversations/:id" component={() => <ProtectedRoute component={Conversations} />} />
       <Route path="/contacts" component={() => <ProtectedRoute component={Contacts} />} />
       <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />
       <Route component={NotFound} />

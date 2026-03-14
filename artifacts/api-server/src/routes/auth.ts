@@ -1,5 +1,5 @@
 import { Router } from "express";
-import bcrypt from "bcryptjs";
+import argon2 from "argon2";
 import { randomBytes } from "crypto";
 import { db, usersTable, sessionsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
@@ -32,7 +32,7 @@ router.post("/login", async (req, res) => {
       return;
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
+    const valid = await argon2.verify(user.passwordHash, password);
     if (!valid) {
       res.status(401).json({ error: "Credenciais inválidas" });
       return;
@@ -64,7 +64,7 @@ router.post("/register", async (req, res) => {
       return;
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await argon2.hash(password, { type: argon2.argon2id });
     const [user] = await db.insert(usersTable).values({ name, email, passwordHash, role: "admin" }).returning();
 
     const token = randomBytes(32).toString("hex");
