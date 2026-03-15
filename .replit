@@ -34,25 +34,25 @@ args = "Backend API"
 name = "Start application"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "PORT=5000 BASE_PATH=/ pnpm --filter @workspace/chatwoot-app run dev"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=5000 node_modules/.bin/vite --config client/vite.config.ts --host 0.0.0.0"
+waitForPort = 5000
 
 [[workflows.workflow]]
 name = "Backend API"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "PORT=3000 pnpm --filter @workspace/api-server run dev"
-waitForPort = 3000
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=3000 node_modules/.bin/tsx server/index.ts"
+waitForPort = 3000
 
 [agent]
 stack = "PNPM_WORKSPACE"
