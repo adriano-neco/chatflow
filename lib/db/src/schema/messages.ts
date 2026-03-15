@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { conversationsTable } from "./conversations";
@@ -11,6 +11,8 @@ export const messagesTable = pgTable("messages", {
   messageType: text("message_type").notNull().default("incoming"),
   deliveryStatus: text("delivery_status").notNull().default("sent"),
   senderId: integer("sender_id").references(() => usersTable.id, { onDelete: "set null" }),
+  replyToId: integer("reply_to_id"),
+  isForwarded: boolean("is_forwarded").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

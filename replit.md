@@ -43,7 +43,14 @@ artifacts-monorepo/
 - `sessions` - JWT-like token sessions
 - `contacts` - Customer contacts (name, email, phone, company, location)
 - `conversations` - Support conversations (status, channel, priority, labels)
-- `messages` - Conversation messages (incoming/outgoing/activity types)
+- `messages` - Conversation messages (replyToId, isForwarded fields added)
+- `attachments` - Media files with metadata (ID3 tags for music, video dims, etc.)
+- `message_reactions` - Emoji reactions per message per user
+
+## Files Saved to Disk
+
+- Uploads stored at `artifacts/api-server/uploads/`
+- Served at `/api/uploads/<filename>`
 
 ## Features
 
@@ -54,9 +61,23 @@ artifacts-monorepo/
 4. `/contacts` - Contacts with full CRUD (create, edit, delete + detail panel)
 5. `/settings` - Settings with inner sidebar (profile, general, agents, etc)
 
+### Conversation Features
+- **Reply**: Right-click → Responder, or hover action button. Shows quoted message above input.
+- **React**: Right-click → Reagir, or hover emoji button. Full emoji picker modal. Reactions shown below bubble.
+- **Forward**: Right-click → Encaminhar. Multi-select conversations modal with search.
+- **Attachments**: Images, videos, audio, music (MP3 with ID3 tags), documents — saved to DB + local storage.
+- **Voice recording**: MediaRecorder with live waveform visualization.
+- **Image lightbox**: Click image to view full size with download.
+- **Video player**: Inline playback with duration and resolution metadata.
+- **Music player**: ID3 tags (title/artist/album/year/cover art) saved in DB metadata.
+- **Document download**: Colored file type icons with download link.
+
 ### Technical Features
 - Real-time via Socket.io (`/api/socket.io`)
 - JWT token auth stored in localStorage, auto-injected in API requests
+- Multipart file upload (multer) with metadata storage
+- Reactions persisted in DB with Socket.io real-time broadcast
+- Forward to multiple conversations in one action
 - React Query for data fetching with graceful mock fallback
 - 6 conversations with messages + 10 contacts seeded in DB
 
