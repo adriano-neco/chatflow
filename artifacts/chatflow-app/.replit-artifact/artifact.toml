@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "ChatFlow"
+version = "1.0.0"
+id = "artifacts/chatflow-app"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 26226
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/chatflow-app run dev"
+
+[services.env]
+PORT = "26226"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/chatflow-app", "run", "build"]
+publicDir = "artifacts/chatflow-app/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
