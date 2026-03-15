@@ -20,31 +20,38 @@ const queryClient = new QueryClient({
 });
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  const [location, navigate] = useLocation();
+  const [, navigate] = useLocation();
   const token = localStorage.getItem('chatflow_token');
 
-  React.useEffect(() => {
-    if (!token && !location.startsWith('/login')) {
-      navigate('/login');
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  React.useLayoutEffect(() => {
+    if (!token) navigate('/login');
+  }, []); // run once on mount — token is read synchronously from localStorage
 
   if (!token) return null;
   return <Component />;
 }
 
+/* Stable component references — defined OUTSIDE render to avoid Wouter remount loops */
+const ConversationsPage = () => <ProtectedRoute component={Conversations} />;
+const ContactsPage      = () => <ProtectedRoute component={Contacts} />;
+const SettingsPage      = () => <ProtectedRoute component={Settings} />;
+const RootRedirect      = () => {
+  const [, navigate] = useLocation();
+  React.useLayoutEffect(() => { navigate('/conversations'); }, []);
+  return null;
+};
+
 function Router() {
   return (
     <Switch>
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-      <Route path="/" component={() => { const [, nav] = useLocation(); React.useEffect(() => nav('/conversations'), []); return null; }} />
-      <Route path="/conversations" component={() => <ProtectedRoute component={Conversations} />} />
-      <Route path="/conversations/:id" component={() => <ProtectedRoute component={Conversations} />} />
-      <Route path="/contacts" component={() => <ProtectedRoute component={Contacts} />} />
-      <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />
-      <Route component={NotFound} />
+      <Route path="/login"             component={Login} />
+      <Route path="/register"          component={Register} />
+      <Route path="/"                  component={RootRedirect} />
+      <Route path="/conversations"     component={ConversationsPage} />
+      <Route path="/conversations/:id" component={ConversationsPage} />
+      <Route path="/contacts"          component={ContactsPage} />
+      <Route path="/settings"          component={SettingsPage} />
+      <Route                           component={NotFound} />
     </Switch>
   );
 }

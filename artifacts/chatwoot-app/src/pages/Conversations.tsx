@@ -13,6 +13,7 @@ import {
 import { cn, getInitials } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
+import { parseBlob } from 'music-metadata-browser';
 
 /* ─── helpers ─────────────────────────────────────────────── */
 
@@ -174,61 +175,158 @@ function AudioMsgPlayer({ file, url, isOut }: { file?: File; url?: string; isOut
   );
 }
 
-function MusicMsgPlayer({ file, url, meta, isOut }: { file?: File; url?: string; meta?: { title?: string; artist?: string; album?: string; coverUrl?: string }; isOut: boolean }) {
+function MusicMsgPlayer({ file, url, meta, isOut }: {
+  file?: File;
+  url?: string;
+  meta?: { title?: string; artist?: string; album?: string; year?: string; track?: string; coverUrl?: string };
+  isOut: boolean;
+}) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const src = file ? URL.createObjectURL(file) : url;
+  const srcRef = useRef<string | undefined>(file ? URL.createObjectURL(file) : url);
 
   const toggle = () => {
     const a = audioRef.current;
     if (!a) return;
     if (playing) { a.pause(); setPlaying(false); }
-    else { a.play(); setPlaying(true); }
+    else { a.play().catch(() => {}); setPlaying(true); }
   };
 
-  const title = meta?.title || file?.name?.replace(/\.[^.]+$/, '') || 'Áudio';
-  const artist = meta?.artist || 'Artista desconhecido';
+  /* Clean up filename for display: strip timestamp suffix */
+  const cleanName = (f?: File) => {
+    if (!f) return 'Áudio';
+    return f.name.replace(/_\d{10,}/, '').replace(/\.[^.]+$/, '').replace(/_/g, ' ').trim() || 'Áudio';
+  };
+
+  const title  = meta?.title  || cleanName(file);
+  const artist = meta?.artist;
+  const album  = meta?.album;
+  const year   = meta?.year;
+  const track  = meta?.track;
+  const cover  = meta?.coverUrl;
+
+  const hasTags = !!(meta?.title || meta?.artist || meta?.album);
+
+  /* gradient accent */
+  const accentA = isOut ? '#128C7E' : '#1a3a4a';
+  const accentB = isOut ? '#075E54' : '#0d2233';
 
   return (
-    <div className="rounded-2xl overflow-hidden shadow-md" style={{ minWidth: 260, maxWidth: 300 }}>
-      {/* Cover */}
-      <div className="relative h-20 flex items-center px-3 gap-3" style={{ background: isOut ? 'linear-gradient(135deg,#128C7E,#075E54)' : 'linear-gradient(135deg,#2C3E50,#3498DB)' }}>
-        <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 shadow-lg" style={{ background: '#ffffff22' }}>
-          {meta?.coverUrl
-            ? <img src={meta.coverUrl} alt="cover" className="w-full h-full object-cover" />
-            : <div className="w-full h-full flex items-center justify-center"><Music className="w-7 h-7 text-white/60" /></div>}
+    <div style={{ minWidth: 272, maxWidth: 320, borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,.35)' }}>
+
+      {/* ── Cover / info header ── */}
+      <div style={{ background: `linear-gradient(135deg, ${accentA}, ${accentB})`, padding: '12px 12px 10px' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+
+          {/* Album art */}
+          <div style={{
+            width: 56, height: 56, borderRadius: 10, overflow: 'hidden', flexShrink: 0,
+            background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,.4)',
+          }}>
+            {cover
+              ? <img src={cover} alt="capa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : <Music style={{ width: 28, height: 28, color: 'rgba(255,255,255,0.55)' }} />}
+          </div>
+
+          {/* Tags */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ color: '#fff', fontWeight: 600, fontSize: 13, lineHeight: 1.3,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 2 }}>
+              {title}
+            </p>
+            {artist && (
+              <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 11, lineHeight: 1.3,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 1 }}>
+                {artist}
+              </p>
+            )}
+            {album && (
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, lineHeight: 1.3,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {album}{year ? ` · ${year}` : ''}
+              </p>
+            )}
+            {!hasTags && (
+              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, marginTop: 2 }}>
+                Sem tags ID3
+              </p>
+            )}
+            {track && (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, marginTop: 1 }}>{track}</p>
+            )}
+          </div>
+
+          {/* Badge */}
+          <span style={{ background: 'rgba(255,255,255,0.18)', color: '#fff', fontSize: 9,
+            fontWeight: 700, padding: '2px 6px', borderRadius: 4, letterSpacing: '0.05em',
+            alignSelf: 'flex-start', flexShrink: 0 }}>
+            MP3
+          </span>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-white font-semibold text-[13px] truncate">{title}</p>
-          <p className="text-white/70 text-[11px] truncate">{artist}</p>
-          {meta?.album && <p className="text-white/50 text-[10px] truncate">{meta.album}</p>}
-        </div>
-        <div className={cn("absolute right-2 bottom-2 text-[10px] px-1.5 py-0.5 rounded", "bg-white/20 text-white")}>MP3</div>
       </div>
-      {/* Controls */}
-      <div className={cn("px-3 py-2 flex items-center gap-2", isOut ? "bg-[#d1f4bb]" : "bg-white")}>
-        <audio ref={audioRef} src={src}
-          onTimeUpdate={() => setProgress(audioRef.current ? audioRef.current.currentTime / (audioRef.current.duration || 1) : 0)}
+
+      {/* ── Controls ── */}
+      <div style={{
+        background: isOut ? 'rgba(0,92,75,0.85)' : 'rgba(32,44,51,0.95)',
+        padding: '10px 12px 12px',
+        display: 'flex', alignItems: 'center', gap: 10,
+      }}>
+        <audio
+          ref={audioRef}
+          src={srcRef.current}
+          onTimeUpdate={() => {
+            const a = audioRef.current;
+            if (!a) return;
+            setCurrentTime(a.currentTime);
+            setProgress(a.currentTime / (a.duration || 1));
+          }}
           onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
-          onEnded={() => setPlaying(false)} />
-        <button onClick={toggle} className="w-9 h-9 rounded-full bg-[#075E54] flex items-center justify-center shrink-0 shadow-sm">
-          {playing ? <Pause className="w-4 h-4 text-white" fill="white" /> : <Play className="w-4 h-4 text-white ml-0.5" fill="white" />}
+          onEnded={() => { setPlaying(false); setProgress(0); setCurrentTime(0); }}
+        />
+
+        {/* Play/Pause */}
+        <button
+          onClick={toggle}
+          style={{
+            width: 38, height: 38, borderRadius: '50%',
+            background: '#00A884', border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0, boxShadow: '0 1px 4px rgba(0,0,0,.4)',
+          }}
+        >
+          {playing
+            ? <Pause style={{ width: 16, height: 16, color: '#fff', fill: '#fff' }} />
+            : <Play  style={{ width: 16, height: 16, color: '#fff', fill: '#fff', marginLeft: 2 }} />}
         </button>
-        <div className="flex-1 flex flex-col gap-1">
-          <div className="relative h-1 bg-black/10 rounded-full cursor-pointer"
+
+        {/* Scrubber */}
+        <div style={{ flex: 1 }}>
+          <div
+            style={{
+              position: 'relative', height: 3, borderRadius: 2,
+              background: 'rgba(255,255,255,0.18)', cursor: 'pointer', marginBottom: 5,
+            }}
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              const p = (e.clientX - rect.left) / rect.width;
+              const p = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
               if (audioRef.current) { audioRef.current.currentTime = p * audioRef.current.duration; setProgress(p); }
-            }}>
-            <div className="h-full rounded-full bg-[#075E54]" style={{ width: `${progress * 100}%` }} />
-            <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#075E54] shadow" style={{ left: `${progress * 100}%`, transform: 'translate(-50%,-50%)' }} />
+            }}
+          >
+            <div style={{ height: '100%', borderRadius: 2, background: '#00A884', width: `${progress * 100}%` }} />
+            <div style={{
+              position: 'absolute', top: '50%', left: `${progress * 100}%`,
+              transform: 'translate(-50%,-50%)',
+              width: 10, height: 10, borderRadius: '50%', background: '#00A884',
+              boxShadow: '0 0 0 2px rgba(0,168,132,.3)',
+            }} />
           </div>
-          <div className="flex justify-between text-[10px] text-gray-400">
-            <span>{formatDuration(duration * progress)}</span>
-            <span>{formatDuration(duration)}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10 }}>{formatDuration(currentTime)}</span>
+            <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10 }}>{formatDuration(duration)}</span>
           </div>
         </div>
       </div>
@@ -398,41 +496,29 @@ function AudioRecorder({ onDone, onCancel }: { onDone: (blob: Blob, duration: nu
   );
 }
 
-/* ─── Read ID3 tags from MP3 ──────────────────────────────── */
-async function readId3Tags(file: File): Promise<{ title?: string; artist?: string; album?: string; coverUrl?: string }> {
+/* ─── Read ID3 tags via music-metadata-browser ───────────── */
+async function readId3Tags(file: File): Promise<{ title?: string; artist?: string; album?: string; year?: string; track?: string; coverUrl?: string }> {
   try {
-    const buf = await file.arrayBuffer();
-    const view = new DataView(buf);
-    if (view.getUint8(0) !== 0x49 || view.getUint8(1) !== 0x44 || view.getUint8(2) !== 0x33) return {};
-    const size = ((view.getUint8(6) & 0x7f) << 21) | ((view.getUint8(7) & 0x7f) << 14) |
-      ((view.getUint8(8) & 0x7f) << 7) | (view.getUint8(9) & 0x7f);
-    const tags: Record<string, string> = {};
+    const meta = await parseBlob(file, { skipCovers: false, duration: false });
+    const c = meta.common;
     let coverUrl: string | undefined;
-    let pos = 10;
-    const dec = new TextDecoder('utf-8');
-    while (pos < size + 10) {
-      const id = String.fromCharCode(view.getUint8(pos), view.getUint8(pos + 1), view.getUint8(pos + 2), view.getUint8(pos + 3));
-      if (id === '\0\0\0\0') break;
-      const fsize = (view.getUint8(pos + 4) << 24) | (view.getUint8(pos + 5) << 16) | (view.getUint8(pos + 6) << 8) | view.getUint8(pos + 7);
-      const data = new Uint8Array(buf, pos + 10, fsize);
-      if (id === 'TIT2') tags.title = dec.decode(data.slice(1)).replace(/\0/g, '');
-      else if (id === 'TPE1') tags.artist = dec.decode(data.slice(1)).replace(/\0/g, '');
-      else if (id === 'TALB') tags.album = dec.decode(data.slice(1)).replace(/\0/g, '');
-      else if (id === 'APIC') {
-        const enc = data[0];
-        let mimeEnd = 1;
-        while (data[mimeEnd] !== 0) mimeEnd++;
-        const mimeType = dec.decode(data.slice(1, mimeEnd));
-        let imgStart = mimeEnd + 2;
-        while (data[imgStart] !== 0) imgStart++;
-        imgStart++;
-        const imgData = data.slice(imgStart);
-        coverUrl = URL.createObjectURL(new Blob([imgData], { type: mimeType || 'image/jpeg' }));
-      }
-      pos += 10 + fsize;
+    if (c.picture && c.picture.length > 0) {
+      const pic = c.picture[0];
+      const blob = new Blob([pic.data], { type: pic.format || 'image/jpeg' });
+      coverUrl = URL.createObjectURL(blob);
     }
-    return { title: tags.title, artist: tags.artist, album: tags.album, coverUrl };
-  } catch { return {}; }
+    return {
+      title:  c.title  || undefined,
+      artist: c.artist || undefined,
+      album:  c.album  || undefined,
+      year:   c.year   ? String(c.year) : undefined,
+      track:  c.track?.no ? `Faixa ${c.track.no}` : undefined,
+      coverUrl,
+    };
+  } catch (e) {
+    console.warn('[readId3Tags] parse error:', e);
+    return {};
+  }
 }
 
 /* ─── Message type ───────────────────────────────────────── */
