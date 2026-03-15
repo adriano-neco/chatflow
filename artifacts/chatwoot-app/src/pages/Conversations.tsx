@@ -789,58 +789,108 @@ export function Conversations() {
                             initial={{ opacity: 0, y: 8, scale: 0.97 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             transition={{ duration: 0.15 }}
-                            className={cn("flex w-full", isOut ? "justify-end" : "justify-start")}
-                            style={{ marginBottom: lastInGroup ? 6 : 2 }}>
+                            className={cn("flex w-full", isOut ? "justify-end pr-2" : "justify-start pl-2")}
+                            style={{ marginBottom: lastInGroup ? 8 : 2 }}>
 
-                            <div className="relative max-w-[65%] md:max-w-[55%]">
-                              {/* Tail */}
-                              {showTail && (
-                                <svg className={cn("absolute top-0 w-3 h-3 overflow-visible", isOut ? "-right-[9px]" : "-left-[9px]")}
-                                  viewBox="0 0 8 13" xmlns="http://www.w3.org/2000/svg">
-                                  {isOut
-                                    ? <path d="M5 0 L8 0 L8 13 Q8 13 0 5 Z" fill="#005C4B" />
-                                    : <path d="M3 0 L0 0 L0 13 Q0 13 8 5 Z" fill="#202C33" />}
+                            {/* Outer wrapper holds tail + bubble together */}
+                            <div className="relative" style={{ maxWidth: 'min(65%, 520px)' }}>
+
+                              {/* ── WhatsApp exact tail paths ── */}
+                              {showTail && isOut && (
+                                <svg
+                                  viewBox="0 0 8 13" width="8" height="13"
+                                  style={{ position: 'absolute', top: 0, right: -8, display: 'block' }}>
+                                  {/* shadow layer */}
+                                  <path
+                                    opacity="0.13"
+                                    fill="#000"
+                                    d="M5.188 0H6c0 2.394-.384 5.729-2.547 7.339C1.985 8.63.549 9.229 0 10.306v2.695c.275-.751.775-1.256 1.555-1.459C2.547 11.32 5.15 9.547 5.79 7.26 6.44 4.973 5.188 0 5.188 0z"
+                                  />
+                                  {/* fill layer */}
+                                  <path
+                                    fill="#005C4B"
+                                    d="M5.188 0c0 2.394-.384 5.729-2.547 7.339C1.985 8.63.549 9.229 0 10.306V2L5.188 0z"
+                                  />
+                                </svg>
+                              )}
+                              {showTail && !isOut && (
+                                <svg
+                                  viewBox="0 0 8 13" width="8" height="13"
+                                  style={{ position: 'absolute', top: 0, left: -8, display: 'block' }}>
+                                  {/* shadow layer */}
+                                  <path
+                                    opacity="0.13"
+                                    fill="#000"
+                                    d="M2.812 0H2C2 2.394 2.384 5.729 4.547 7.339c1.468 1.291 2.904 1.89 3.453 2.967v2.695c-.275-.751-.775-1.256-1.555-1.459C5.453 11.32 2.85 9.547 2.21 7.26 1.56 4.973 2.812 0 2.812 0z"
+                                  />
+                                  {/* fill layer */}
+                                  <path
+                                    fill="#202C33"
+                                    d="M2.812 0c0 2.394.384 5.729 2.547 7.339 1.468 1.291 2.904 1.89 3.453 2.967V2L2.812 0z"
+                                  />
                                 </svg>
                               )}
 
-                              {/* Bubble */}
-                              <div className={cn("px-2.5 py-1.5 rounded-lg shadow-sm overflow-hidden")}
+                              {/* ── Bubble ── */}
+                              <div
                                 style={{
                                   background: isOut ? '#005C4B' : '#202C33',
                                   borderRadius: showTail
-                                    ? isOut ? '8px 0px 8px 8px' : '0px 8px 8px 8px'
-                                    : '8px',
-                                }}>
+                                    ? isOut  ? '7.5px 0 7.5px 7.5px'
+                                             : '0 7.5px 7.5px 7.5px'
+                                    : '7.5px',
+                                  boxShadow: '0 1px 2px rgba(0,0,0,.35)',
+                                  overflow: 'hidden',
+                                  position: 'relative',
+                                }}
+                              >
 
                                 {/* Attachment content */}
                                 {msg.attach && (
-                                  <div className="mb-1">
-                                    {msg.attach.type === 'image' && <ImageMsg file={msg.attach.file} />}
-                                    {msg.attach.type === 'video' && <VideoMsg file={msg.attach.file} name={msg.attach.file.name} />}
-                                    {msg.attach.type === 'audio' && <AudioMsgPlayer file={msg.attach.file} isOut={isOut} />}
-                                    {msg.attach.type === 'music' && <MusicMsgPlayer file={msg.attach.file} meta={msg.attach.meta} isOut={isOut} />}
+                                  <div>
+                                    {msg.attach.type === 'image'    && <ImageMsg file={msg.attach.file} />}
+                                    {msg.attach.type === 'video'    && <VideoMsg file={msg.attach.file} name={msg.attach.file.name} />}
+                                    {msg.attach.type === 'audio'    && <AudioMsgPlayer file={msg.attach.file} isOut={isOut} />}
+                                    {msg.attach.type === 'music'    && <MusicMsgPlayer file={msg.attach.file} meta={msg.attach.meta} isOut={isOut} />}
                                     {msg.attach.type === 'document' && <DocumentMsg file={msg.attach.file} name={msg.attach.file.name} size={msg.attach.file.size} />}
+                                    {/* Time overlay for attachments */}
+                                    <div className="flex items-center justify-end gap-1 px-2 pb-1.5 pt-0.5">
+                                      <span className="text-[11px]" style={{ color: isOut ? '#7AE2C7' : '#8696A0' }}>
+                                        {format(new Date(msg.createdAt), 'HH:mm')}
+                                      </span>
+                                      {isOut && <MessageStatusIcon status={msg.deliveryStatus || 'sent'} />}
+                                    </div>
                                   </div>
                                 )}
 
-                                {/* Text */}
+                                {/* Plain text bubble */}
                                 {!msg.attach && (
-                                  <p className="text-[14.2px] leading-[1.4] whitespace-pre-wrap break-words pr-12 select-text"
-                                    style={{ color: '#E9EDEF' }}>
-                                    {msg.content}
-                                  </p>
+                                  <div className="px-[9px] pt-[6px] pb-[4px]">
+                                    {/* Text + inline float spacer trick (WhatsApp style) */}
+                                    <p className="text-[14.2px] leading-[19px] whitespace-pre-wrap break-words select-text"
+                                      style={{ color: '#E9EDEF' }}>
+                                      {msg.content}
+                                      {/* Invisible spacer so time never overlaps text */}
+                                      <span aria-hidden style={{ display: 'inline-block', width: isOut ? 72 : 44, height: 1 }} />
+                                    </p>
+                                    {/* Time + status absolutely anchored to bottom-right */}
+                                    <div
+                                      style={{
+                                        position: 'absolute',
+                                        bottom: 5,
+                                        right: 8,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 3,
+                                        pointerEvents: 'none',
+                                      }}>
+                                      <span className="text-[11px]" style={{ color: isOut ? '#7AE2C7' : '#8696A0', lineHeight: 1 }}>
+                                        {format(new Date(msg.createdAt), 'HH:mm')}
+                                      </span>
+                                      {isOut && <MessageStatusIcon status={msg.deliveryStatus || 'sent'} />}
+                                    </div>
+                                  </div>
                                 )}
-
-                                {/* Time + status */}
-                                <div className={cn(
-                                  "flex items-center gap-1 mt-0.5",
-                                  msg.attach ? "justify-end pt-1" : "justify-end -mb-0.5"
-                                )}>
-                                  <span className="text-[11px]" style={{ color: isOut ? '#7AE2C7' : '#8696A0' }}>
-                                    {format(new Date(msg.createdAt), 'HH:mm')}
-                                  </span>
-                                  {isOut && <MessageStatusIcon status={msg.deliveryStatus || 'sent'} />}
-                                </div>
                               </div>
                             </div>
                           </motion.div>
