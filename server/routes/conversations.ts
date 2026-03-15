@@ -3,6 +3,7 @@ import { db, conversationsTable, contactsTable, usersTable, messagesTable } from
 import { eq, desc, sql } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
 import { io } from "../app.js";
+import { logger } from "../lib/logger.js";
 
 const router = Router();
 
@@ -65,7 +66,7 @@ router.get("/", requireAuth, async (req, res) => {
     const result = await Promise.all(rows.map(buildConversation));
     res.json(result);
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -87,7 +88,7 @@ router.post("/", requireAuth, async (req, res) => {
     io.emit("conversation:created", result);
     res.status(201).json(result);
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -102,7 +103,7 @@ router.get("/:id", requireAuth, async (req, res) => {
     }
     res.json(await buildConversation(conv));
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -129,7 +130,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     io.emit("conversation:updated", result);
     res.json(result);
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -141,7 +142,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     io.emit("conversation:deleted", { id });
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });

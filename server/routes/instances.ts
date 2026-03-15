@@ -3,6 +3,7 @@ import { db, wppInstancesTable, contactsTable, conversationsTable, messagesTable
 import { eq, and } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
 import { io } from "../app.js";
+import { logger } from "../lib/logger.js";
 import {
   generateToken,
   startSession,
@@ -19,7 +20,7 @@ router.get("/", requireAuth, async (_req, res) => {
     const rows = await db.select().from(wppInstancesTable).orderBy(wppInstancesTable.createdAt);
     res.json(rows.map(r => ({ ...r, secretKey: undefined, token: undefined })));
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -32,7 +33,7 @@ router.get("/:id", requireAuth, async (req, res) => {
     if (!row) { res.status(404).json({ error: "Instância não encontrada" }); return; }
     res.json({ ...row, secretKey: undefined, token: undefined });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -59,7 +60,7 @@ router.post("/", requireAuth, async (req, res) => {
       res.status(409).json({ error: "Nome de sessão já existe" });
       return;
     }
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -77,7 +78,7 @@ router.patch("/:id", requireAuth, async (req, res) => {
     if (!row) { res.status(404).json({ error: "Instância não encontrada" }); return; }
     res.json({ ...row, secretKey: undefined, token: undefined });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -94,7 +95,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     await db.delete(wppInstancesTable).where(eq(wppInstancesTable.id, id));
     res.json({ ok: true });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -131,7 +132,7 @@ router.post("/:id/connect", requireAuth, async (req, res) => {
 
     res.json({ ok: true, status: "qr_pending", qrCode });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -147,7 +148,7 @@ router.post("/:id/disconnect", requireAuth, async (req, res) => {
     io.emit("instance:updated", { id, status: "disconnected" });
     res.json({ ok: true });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -177,7 +178,7 @@ router.get("/:id/qr", requireAuth, async (req, res) => {
 
     res.json({ status: row.status, qrCode: qrCode ?? row.qrCode });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -306,7 +307,7 @@ router.post("/:id/webhook", async (req, res) => {
 
     res.json({ ok: true });
   } catch (err) {
-    console.error("Webhook error:", err);
+    logger.error("Webhook error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });

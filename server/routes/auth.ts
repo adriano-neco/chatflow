@@ -4,6 +4,7 @@ import { randomBytes } from "crypto";
 import { db, usersTable, sessionsTable } from "../db/index.js";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
+import { logger } from "../lib/logger.js";
 
 const router = Router();
 
@@ -44,7 +45,7 @@ router.post("/login", async (req, res) => {
 
     res.json({ user: formatUser(user), token });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -72,7 +73,7 @@ router.post("/register", async (req, res) => {
 
     res.json({ user: formatUser(user), token });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });

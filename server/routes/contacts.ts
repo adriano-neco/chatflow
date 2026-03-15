@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, contactsTable, conversationsTable, usersTable, messagesTable } from "../db/index.js";
 import { eq, like, or, desc, sql } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
+import { logger } from "../lib/logger.js";
 
 const router = Router();
 
@@ -50,7 +51,7 @@ router.get("/", requireAuth, async (req, res) => {
 
     res.json({ contacts: contacts.map(formatContact), total, page, limit });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -65,7 +66,7 @@ router.post("/", requireAuth, async (req, res) => {
     const [contact] = await db.insert(contactsTable).values({ name, email, phone, company, location }).returning();
     res.status(201).json(formatContact(contact));
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -80,7 +81,7 @@ router.get("/:id", requireAuth, async (req, res) => {
     }
     res.json(formatContact(contact));
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -104,7 +105,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     }
     res.json(formatContact(contact));
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -115,7 +116,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     await db.delete(contactsTable).where(eq(contactsTable.id, id));
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -140,7 +141,7 @@ router.get("/:id/conversations", requireAuth, async (req, res) => {
       updatedAt: c.updatedAt.toISOString(),
     })));
   } catch (err) {
-    console.error(err);
+    logger.error("Internal error", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });

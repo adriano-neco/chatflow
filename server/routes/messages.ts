@@ -3,9 +3,9 @@ import { db, messagesTable, conversationsTable, usersTable, attachmentsTable, me
 import { eq, asc } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
 import { io } from "../app.js";
+import { uploadFile } from "../lib/storage.js";
+import { logger } from "../lib/logger.js";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
 import {
   sendTextMessage,
   sendFileBase64,
@@ -13,18 +13,7 @@ import {
   sendAudioBase64,
 } from "../lib/wppconnect.js";
 
-const uploadsDir = path.resolve(process.cwd(), "data/uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`);
-  },
-});
-
-const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 
 const router = Router({ mergeParams: true });
 
@@ -82,7 +71,7 @@ router.get("/", requireAuth, async (req, res) => {
     const result = await Promise.all(messages.map(formatMessage));
     res.json(result);
   } catch (err) {
-    console.error(err);
+    logger.error("Failed to fetch messages", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -96,16 +85,16 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
     let replyToId: number | undefined;
     let isForwarded: boolean = false;
     let attachmentData: { type: string; name: string; size: number; mimeType: string; metadata?: any } | null = null;
+    let fileBuffer: Buffer | null = null;
 
     if (req.file) {
       const body = req.body;
       content = body.content || req.file.originalname;
       replyToId = body.replyToId ? parseInt(body.replyToId) : undefined;
       isForwarded = body.isForwarded === "true";
-      const rawMeta = body.metadata;
       let metadata: any = undefined;
-      if (rawMeta) {
-        try { metadata = JSON.parse(rawMeta); } catch {}
+      if (body.metadata) {
+        try { metadata = JSON.parse(body.metadata); } catch {}
       }
       attachmentData = {
         type: body.attachmentType || "document",
@@ -114,6 +103,7 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
         mimeType: req.file.mimetype,
         metadata,
       };
+      fileBuffer = req.file.buffer;
     } else {
       const body = req.body;
       content = body.content;
@@ -136,8 +126,10 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
 
     let fileUrl: string | undefined;
 
-    if (attachmentData && req.file) {
-      fileUrl = `/api/uploads/${req.file.filename}`;
+    if (attachmentData && fileBuffer) {
+      fileUrl = await uploadFile(fileBuffer, attachmentData.name, attachmentData.mimeType);
+      logger.info("Attachment uploaded to MinIO", { name: attachmentData.name, url: fileUrl });
+
       await db.insert(attachmentsTable).values({
         messageId: msg.id,
         type: attachmentData.type,
@@ -163,32 +155,31 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
           const [contact] = await db.select().from(contactsTable).where(eq(contactsTable.id, conv.contactId)).limit(1);
           const phone = contact?.whatsappId ?? contact?.phone ?? "";
           if (phone) {
-            if (req.file && fileUrl && attachmentData) {
-              const filePath = path.resolve(process.cwd(), "data/uploads", req.file.filename);
+            if (fileBuffer && attachmentData) {
+              const base64 = fileBuffer.toString("base64");
+              const dataUri = `data:${attachmentData.mimeType};base64,${base64}`;
+              const caption = content === attachmentData.name ? "" : content;
               try {
-                const fileBuffer = fs.readFileSync(filePath);
-                const base64 = fileBuffer.toString("base64");
-                const dataUri = `data:${req.file.mimetype};base64,${base64}`;
-
                 if (attachmentData.type === "image") {
-                  await sendImageBase64(instance, instance.token, phone, dataUri, attachmentData.name, content === attachmentData.name ? "" : content);
+                  await sendImageBase64(instance, instance.token, phone, dataUri, attachmentData.name, caption);
                 } else if (attachmentData.type === "audio") {
                   await sendAudioBase64(instance, instance.token, phone, base64, true);
                 } else {
-                  await sendFileBase64(instance, instance.token, phone, dataUri, attachmentData.name, content === attachmentData.name ? "" : content);
+                  await sendFileBase64(instance, instance.token, phone, dataUri, attachmentData.name, caption);
                 }
               } catch (e) {
-                console.error("WPP send file error:", e);
+                logger.error("WPP send file failed", { error: String(e) });
               }
             } else {
-              await sendTextMessage(instance, instance.token, phone, content).catch(e => console.error("WPP send error:", e));
+              await sendTextMessage(instance, instance.token, phone, content)
+                .catch(e => logger.error("WPP send text failed", { error: String(e) }));
             }
           }
         }
       }
     }
   } catch (err) {
-    console.error(err);
+    logger.error("Failed to send message", { error: String(err) });
     res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -2,23 +2,20 @@ import express, { type Express } from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
-import path from "path";
-import fs from "fs";
 import router from "./routes/index.js";
+import { ensureBucket } from "./lib/storage.js";
+import { logger, httpLoggerMiddleware } from "./lib/logger.js";
 
 const app: Express = express();
 const httpServer = createServer(app);
 
 export const io = new SocketIOServer(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
+  cors: { origin: "*", methods: ["GET", "POST"] },
   path: "/api/socket.io",
 });
 
 io.on("connection", (socket) => {
-  console.log("Socket connected:", socket.id);
+  logger.debug("Socket connected", { socketId: socket.id });
 
   socket.on("join_conversation", (conversationId: number) => {
     socket.join(`conversation:${conversationId}`);
@@ -29,18 +26,19 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Socket disconnected:", socket.id);
+    logger.debug("Socket disconnected", { socketId: socket.id });
   });
 });
 
-const uploadsDir = path.resolve(process.cwd(), "data/uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+ensureBucket()
+  .then(() => logger.info("MinIO bucket ready", { bucket: process.env.MINIO_BUCKET ?? "chatflow" }))
+  .catch((err) => logger.warn("MinIO bucket init failed — uploads may not work", { error: String(err) }));
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(httpLoggerMiddleware());
 
-app.use("/api/uploads", express.static(uploadsDir));
 app.use("/api", router);
 
 export { httpServer };
