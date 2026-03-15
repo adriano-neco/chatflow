@@ -5,3 +5,4 @@ export * from "./messages";
 export * from "./sessions";
 export * from "./attachments";
 export * from "./reactions";
+export * from "./instances";

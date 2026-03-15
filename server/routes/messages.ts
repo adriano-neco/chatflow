@@ -1,11 +1,17 @@
 import { Router } from "express";
-import { db, messagesTable, conversationsTable, usersTable, attachmentsTable, messageReactionsTable } from "../db/index.js";
+import { db, messagesTable, conversationsTable, usersTable, attachmentsTable, messageReactionsTable, wppInstancesTable, contactsTable } from "../db/index.js";
 import { eq, asc } from "drizzle-orm";
 import { requireAuth } from "../lib/auth.js";
 import { io } from "../app.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import {
+  sendTextMessage,
+  sendFileBase64,
+  sendImageBase64,
+  sendAudioBase64,
+} from "../lib/wppconnect.js";
 
 const uploadsDir = path.resolve(process.cwd(), "data/uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
@@ -128,12 +134,14 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
       .values({ conversationId, content, messageType, deliveryStatus: "sent", senderId, replyToId, isForwarded })
       .returning();
 
+    let fileUrl: string | undefined;
+
     if (attachmentData && req.file) {
-      const url = `/api/uploads/${req.file.filename}`;
+      fileUrl = `/api/uploads/${req.file.filename}`;
       await db.insert(attachmentsTable).values({
         messageId: msg.id,
         type: attachmentData.type,
-        url,
+        url: fileUrl,
         name: attachmentData.name,
         size: attachmentData.size,
         mimeType: attachmentData.mimeType,
@@ -146,6 +154,39 @@ router.post("/", requireAuth, upload.single("file"), async (req, res) => {
     const result = await formatMessage(msg);
     io.to(`conversation:${conversationId}`).emit("message:new", result);
     res.status(201).json(result);
+
+    if (messageType === "outgoing") {
+      const [conv] = await db.select().from(conversationsTable).where(eq(conversationsTable.id, conversationId)).limit(1);
+      if (conv?.channel === "whatsapp" && conv.instanceId) {
+        const [instance] = await db.select().from(wppInstancesTable).where(eq(wppInstancesTable.id, conv.instanceId)).limit(1);
+        if (instance?.status === "connected" && instance.token) {
+          const [contact] = await db.select().from(contactsTable).where(eq(contactsTable.id, conv.contactId)).limit(1);
+          const phone = contact?.whatsappId ?? contact?.phone ?? "";
+          if (phone) {
+            if (req.file && fileUrl && attachmentData) {
+              const filePath = path.resolve(process.cwd(), "data/uploads", req.file.filename);
+              try {
+                const fileBuffer = fs.readFileSync(filePath);
+                const base64 = fileBuffer.toString("base64");
+                const dataUri = `data:${req.file.mimetype};base64,${base64}`;
+
+                if (attachmentData.type === "image") {
+                  await sendImageBase64(instance, instance.token, phone, dataUri, attachmentData.name, content === attachmentData.name ? "" : content);
+                } else if (attachmentData.type === "audio") {
+                  await sendAudioBase64(instance, instance.token, phone, base64, true);
+                } else {
+                  await sendFileBase64(instance, instance.token, phone, dataUri, attachmentData.name, content === attachmentData.name ? "" : content);
+                }
+              } catch (e) {
+                console.error("WPP send file error:", e);
+              }
+            } else {
+              await sendTextMessage(instance, instance.token, phone, content).catch(e => console.error("WPP send error:", e));
+            }
+          }
+        }
+      }
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

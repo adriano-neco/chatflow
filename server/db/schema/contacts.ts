@@ -8,6 +8,7 @@ export const contactsTable = pgTable("contacts", {
   company: text("company"),
   location: text("location"),
   avatarUrl: text("avatar_url"),
+  whatsappId: text("whatsapp_id"),
   conversationsCount: integer("conversations_count").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

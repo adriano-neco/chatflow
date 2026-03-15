@@ -11,6 +11,7 @@ export const conversationsTable = pgTable("conversations", {
   unreadCount: integer("unread_count").notNull().default(0),
   contactId: integer("contact_id").notNull().references(() => contactsTable.id, { onDelete: "cascade" }),
   assigneeId: integer("assignee_id").references(() => usersTable.id, { onDelete: "set null" }),
+  instanceId: integer("instance_id"),
   labels: text("labels").array().notNull().default([]),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

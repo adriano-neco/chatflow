@@ -11,6 +11,7 @@ export const messagesTable = pgTable("messages", {
   senderId: integer("sender_id").references(() => usersTable.id, { onDelete: "set null" }),
   replyToId: integer("reply_to_id"),
   isForwarded: boolean("is_forwarded").notNull().default(false),
+  whatsappMsgId: text("whatsapp_msg_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
