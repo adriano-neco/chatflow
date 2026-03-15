@@ -20,14 +20,15 @@ const queryClient = new QueryClient({
 });
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const token = localStorage.getItem('chatflow_token');
 
   React.useEffect(() => {
-    if (!token) {
+    if (!token && !location.startsWith('/login')) {
       navigate('/login');
     }
-  }, [token, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   if (!token) return null;
   return <Component />;
