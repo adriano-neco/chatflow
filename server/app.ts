@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import router from "./routes/index.js";
 import { ensureBucket } from "./lib/storage.js";
 import { logger, httpLoggerMiddleware } from "./lib/logger.js";
@@ -40,6 +41,15 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(httpLoggerMiddleware());
 
 app.use("/api", router);
+
+const vitePort = 5000;
+const viteProxy = createProxyMiddleware({
+  target: `http://localhost:${vitePort}`,
+  changeOrigin: true,
+  ws: true,
+});
+
+app.use(viteProxy);
 
 export { httpServer };
 export default app;
