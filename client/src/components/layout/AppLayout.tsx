@@ -20,76 +20,76 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col h-screen w-full bg-background overflow-hidden">
-      {/* Full-width Header */}
-      <header className="h-16 flex items-center border-b border-sidebar-border/60 sticky top-0 z-20 w-full shrink-0">
+      {/* Full-width Header — unified bg matching sidebar */}
+      <header className="h-16 flex items-center justify-between bg-sidebar border-b border-sidebar-border/40 sticky top-0 z-20 w-full shrink-0">
 
-        {/* Logo section — same width as sidebar, dark background matching sidebar */}
-        <div
-          className={cn(
-            'flex items-center gap-3 h-full px-4 bg-sidebar border-r border-sidebar-border/50 shrink-0 transition-all duration-300',
-            isSidebarOpen ? 'w-64' : 'w-[72px]',
-          )}
-        >
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary shadow-lg shadow-primary/20 shrink-0">
-            <MessageSquare className="w-5 h-5 text-primary-foreground" />
+        {/* Left: logo + menu + search */}
+        <div className="flex items-center gap-3 h-full">
+          {/* Logo area — same width as sidebar */}
+          <div
+            className={cn(
+              'flex items-center gap-3 h-full px-4 border-r border-sidebar-border/40 shrink-0 transition-all duration-300',
+              isSidebarOpen ? 'w-64' : 'w-[72px]',
+            )}
+          >
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary shadow-lg shadow-primary/20 shrink-0">
+              <MessageSquare className="w-5 h-5 text-primary-foreground" />
+            </div>
+            {isSidebarOpen && (
+              <span className="font-display font-bold text-xl tracking-tight text-sidebar-foreground truncate">
+                ChatFlow
+              </span>
+            )}
           </div>
-          {isSidebarOpen && (
-            <span className="font-display font-bold text-xl tracking-tight text-white truncate">
-              ChatFlow
-            </span>
-          )}
-        </div>
 
-        {/* Rest of header — card background */}
-        <div className="flex flex-1 items-center justify-between h-full px-4 bg-card dark:bg-zinc-800/90 backdrop-blur-md">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 px-3">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
             >
               <Menu className="w-5 h-5" />
             </button>
             <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sidebar-foreground/40" />
               <input
                 type="text"
                 placeholder="Buscar conversas, contatos..."
-                className="h-10 pl-10 pr-4 rounded-full bg-muted/50 border-none focus:ring-2 focus:ring-primary/20 w-64 lg:w-96 text-sm transition-all focus:bg-background"
+                className="h-9 pl-10 pr-4 rounded-full bg-sidebar-accent/60 border border-sidebar-border/30 text-sidebar-foreground placeholder:text-sidebar-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/30 w-64 lg:w-80 text-sm transition-all"
               />
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <button className="relative p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-card"></span>
-            </button>
+        {/* Right: notifications + user + logout */}
+        <div className="flex items-center gap-2 px-4">
+          <button className="relative p-2 rounded-full hover:bg-sidebar-accent text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
+            <Bell className="w-5 h-5" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-sidebar"></span>
+          </button>
 
-            <div className="w-px h-6 bg-border mx-1"></div>
+          <div className="w-px h-5 bg-sidebar-border/40 mx-1"></div>
 
-            {/* User area */}
-            <div className="flex items-center gap-2.5">
-              <Avatar initials={user ? getInitials(user.name) : 'U'} status="online" className="w-8 h-8 text-xs" />
-              <div className="hidden sm:flex flex-col leading-none">
-                <span className="text-sm font-semibold text-foreground truncate max-w-[120px]">{user?.name}</span>
-                <span className="text-xs text-muted-foreground capitalize">{user?.role}</span>
-              </div>
+          <div className="flex items-center gap-2.5">
+            <Avatar initials={user ? getInitials(user.name) : 'U'} status="online" className="w-8 h-8 text-xs ring-1 ring-sidebar-border/40" />
+            <div className="hidden sm:flex flex-col leading-none">
+              <span className="text-sm font-semibold text-sidebar-foreground truncate max-w-[120px]">{user?.name}</span>
+              <span className="text-xs text-sidebar-foreground/50 capitalize">{user?.role}</span>
             </div>
-
-            <div className="w-px h-6 bg-border mx-1"></div>
-
-            <button
-              onClick={() => {
-                localStorage.removeItem('chatflow_token');
-                localStorage.removeItem('chatflow_user');
-                window.location.href = '/login';
-              }}
-              className="flex items-center gap-2 p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-            >
-              <LogOut className="w-5 h-5" />
-              <span className="text-sm font-medium hidden sm:block">Sair</span>
-            </button>
           </div>
+
+          <div className="w-px h-5 bg-sidebar-border/40 mx-1"></div>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem('chatflow_token');
+              localStorage.removeItem('chatflow_user');
+              window.location.href = '/login';
+            }}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-destructive/15 text-sidebar-foreground/60 hover:text-destructive transition-colors text-sm font-medium"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:block">Sair</span>
+          </button>
         </div>
       </header>
 
