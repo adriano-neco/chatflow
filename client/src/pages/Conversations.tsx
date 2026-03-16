@@ -13,7 +13,8 @@ import {
 import { cn, getInitials } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
-import { parseBlob } from 'music-metadata-browser';
+// @ts-ignore – no types for jsmediatags
+import jsmediatags from 'jsmediatags/dist/jsmediatags.min.js';
 
 /* ─── helpers ─────────────────────────────────────────────── */
 function formatConvTime(dateStr: string) {
@@ -80,29 +81,41 @@ type ChatMessage = {
 
 /* ─── Read ID3 tags (returns base64 cover art) ───────────── */
 async function readId3Tags(file: File): Promise<Record<string, string | undefined>> {
-  try {
-    const meta = await parseBlob(file, { skipCovers: false, duration: false });
-    const c = meta.common;
-    let coverUrl: string | undefined;
-    if (c.picture && c.picture.length > 0) {
-      const pic = c.picture[0];
-      const arr = new Uint8Array(pic.data);
-      let binary = '';
-      arr.forEach(b => { binary += String.fromCharCode(b); });
-      const b64 = btoa(binary);
-      coverUrl = `data:${pic.format || 'image/jpeg'};base64,${b64}`;
+  return new Promise((resolve) => {
+    try {
+      jsmediatags.read(file, {
+        onSuccess(tag: any) {
+          const t = tag.tags ?? {};
+          let coverUrl: string | undefined;
+          if (t.picture) {
+            const pic = t.picture;
+            const bytes: number[] = pic.data;
+            const u8 = new Uint8Array(bytes);
+            let binary = '';
+            const chunk = 8192;
+            for (let i = 0; i < u8.length; i += chunk) {
+              binary += String.fromCharCode.apply(null, u8.subarray(i, i + chunk) as unknown as number[]);
+            }
+            const b64 = btoa(binary);
+            coverUrl = `data:${pic.format || 'image/jpeg'};base64,${b64}`;
+          }
+          resolve({
+            title:  t.title  || undefined,
+            artist: t.artist || undefined,
+            album:  t.album  || undefined,
+            year:   t.year   ? String(t.year) : undefined,
+            track:  t.track  ? `Faixa ${t.track}` : undefined,
+            coverUrl,
+          });
+        },
+        onError() {
+          resolve({});
+        },
+      });
+    } catch {
+      resolve({});
     }
-    return {
-      title:  c.title  || undefined,
-      artist: c.artist || undefined,
-      album:  c.album  || undefined,
-      year:   c.year   ? String(c.year) : undefined,
-      track:  c.track?.no ? `Faixa ${c.track.no}` : undefined,
-      coverUrl,
-    };
-  } catch {
-    return {};
-  }
+  });
 }
 
 /* ─── WhatsApp ticks ─────────────────────────────────────── */
