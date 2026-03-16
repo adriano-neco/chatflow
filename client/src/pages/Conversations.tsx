@@ -8,7 +8,7 @@ import {
   Search, MoreVertical, Send, Smile, Inbox, Phone, Video, MessageSquare,
   ArrowLeft, Mic, FileText, Image, Music, Film, Camera, X,
   Play, Pause, Download, ChevronRight, Reply, Forward,
-  Copy, ArrowRightCircle, Edit3, Check,
+  Copy, ArrowRightCircle, Check,
 } from 'lucide-react';
 import { cn, getInitials } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -1054,20 +1054,11 @@ export function Conversations() {
           selectedId ? "hidden md:flex w-[360px]" : "flex w-full md:w-[360px]"
         )} style={{ background: '#111B21' }}>
 
-          {/* Header */}
+          {/* Page title */}
           <div className="flex items-center justify-between px-4 py-3 shrink-0"
-            style={{ background: '#202C33', borderBottom: '1px solid #2A3942' }}>
-            <div className="flex items-center gap-3">
-              <ContactAvatar name={user?.name || 'U'} size={40} />
-              <div>
-                <p className="text-[14px] font-semibold leading-tight" style={{ color: '#E9EDEF' }}>{user?.name || 'ChatFlow'}</p>
-                <p className="text-[11px]" style={{ color: '#8696A0' }}>{user?.role === 'admin' ? 'Administrador' : 'Agente'}</p>
-              </div>
-            </div>
+            style={{ background: '#202C33', borderBottom: '1px solid rgba(42,57,66,0.8)' }}>
+            <h1 className="text-[16px] font-semibold" style={{ color: '#E9EDEF' }}>Conversas</h1>
             <div className="flex items-center gap-1">
-              <button className="p-2 rounded-full hover:bg-[#2A3942] transition-colors" style={{ color: '#AEBAC1' }} title="Editar">
-                <Edit3 className="w-5 h-5" />
-              </button>
               <button className="p-2 rounded-full hover:bg-[#2A3942] transition-colors" style={{ color: '#AEBAC1' }} title="Menu">
                 <MoreVertical className="w-5 h-5" />
               </button>
