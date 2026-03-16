@@ -43,7 +43,7 @@ function StatusBadge({ status }: { status: string }) {
   const cfg: Record<string, { cls: string; icon: React.ReactNode }> = {
     connected:    { cls: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30', icon: <CheckCircle2 className="w-3 h-3" /> },
     qr_pending:   { cls: 'bg-amber-500/15 text-amber-600 border-amber-500/30', icon: <QrCode className="w-3 h-3" /> },
-    connecting:   { cls: 'bg-blue-500/15 text-blue-600 border-blue-500/30', icon: <Loader2 className="w-3 h-3 animate-spin" /> },
+    connecting:   { cls: 'bg-[#25D366]/15 text-[#1DAE55] border-[#25D366]/30', icon: <Loader2 className="w-3 h-3 animate-spin" /> },
     disconnected: { cls: 'bg-muted text-muted-foreground border-border', icon: <WifiOff className="w-3 h-3" /> },
     error:        { cls: 'bg-red-500/15 text-red-600 border-red-500/30', icon: <AlertCircle className="w-3 h-3" /> },
   };

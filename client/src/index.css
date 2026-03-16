@@ -37,9 +37,9 @@
   --background: 210 20% 98%; /* Light gray background */
   --foreground: 222 47% 11%;
   
-  /* Vibrant Indigo Primary */
-  --primary: 243 75% 59%; 
-  --primary-foreground: 210 40% 98%;
+  /* WhatsApp Green Primary */
+  --primary: 142 70% 49%;
+  --primary-foreground: 0 0% 100%;
   
   --secondary: 210 40% 96%;
   --secondary-foreground: 222 47% 11%;
@@ -54,7 +54,7 @@
   --destructive-foreground: 210 40% 98%;
   
   --border: 214 32% 91%;
-  --ring: 243 75% 59%;
+  --ring: 142 70% 49%;
   
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
@@ -69,8 +69,8 @@
   --background: 222 47% 11%;
   --foreground: 210 40% 98%;
   
-  --primary: 243 75% 65%;
-  --primary-foreground: 222 47% 11%;
+  --primary: 142 70% 45%;
+  --primary-foreground: 0 0% 100%;
   
   --secondary: 217 33% 17%;
   --secondary-foreground: 210 40% 98%;
@@ -85,7 +85,7 @@
   --destructive-foreground: 210 40% 98%;
   
   --border: 217 33% 17%;
-  --ring: 243 75% 65%;
+  --ring: 142 70% 45%;
   
   --card: 222 47% 11%;
   --card-foreground: 210 40% 98%;
