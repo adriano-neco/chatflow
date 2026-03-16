@@ -6,7 +6,8 @@
     "dev:server": "tsx server/index.ts",
     "dev:client": "vite --config client/vite.config.ts --host 0.0.0.0",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "argon2": "^0.44.0",
