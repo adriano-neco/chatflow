@@ -1259,7 +1259,7 @@ export function Conversations() {
                                 onContextMenu={e => handleContextMenu(e, msg)}
                                 style={{
                                   background: isOut ? '#005C4B' : '#202C33',
-                                  borderRadius: showTail ? (isOut ? '7.5px 0 7.5px 7.5px' : '0 7.5px 7.5px 7.5px') : '7.5px',
+                                  borderRadius: showTail ? (isOut ? '12px 4px 12px 12px' : '4px 12px 12px 12px') : '12px',
                                   boxShadow: '0 1px 3px rgba(0,0,0,.4)',
                                   overflow: 'hidden',
                                   cursor: 'context-menu',
