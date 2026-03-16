@@ -41,6 +41,12 @@ export default defineConfig(async () => {
       port,
       host: "0.0.0.0",
       allowedHosts: true,
+      // In Replit the frontend is proxied through Express on port 3000 (external 80/443).
+      // Tell the HMR client to connect via the standard HTTPS port (443) so the
+      // WebSocket upgrade goes through Express → our upgrade handler → Vite on port 5000.
+      hmr: isReplit
+        ? { clientPort: 443, protocol: "wss" }
+        : true,
       proxy: {
         "/api": {
           target: "http://localhost:3000",
