@@ -58,31 +58,25 @@ function StatusBadge({ status }: { status: string }) {
 
 /* ─────────────────────────────── Create Instance Dialog ─────── */
 function CreateInstanceDialog({ onClose, onCreate }: { onClose: () => void; onCreate: () => void }) {
-  const [form, setForm] = useState({ name: '', sessionName: '', baseUrl: '', secretKey: '' });
+  const [form, setForm] = useState({ name: '', baseUrl: '', secretKey: '' });
   const [loading, setLoading] = useState(false);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value;
-    setForm(prev => ({
-      ...prev,
-      [k]: v,
-      ...(k === 'name' && !prev.sessionName
-        ? { sessionName: v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') }
-        : {}),
-    }));
+    setForm(prev => ({ ...prev, [k]: e.target.value }));
   };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.sessionName || !form.baseUrl || !form.secretKey) {
+    if (!form.name || !form.baseUrl || !form.secretKey) {
       toast.error('Preencha todos os campos');
       return;
     }
+    const sessionName = form.name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
     setLoading(true);
     try {
       const res = await apiFetch('/api/instances', {
         method: 'POST',
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, sessionName }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Erro ao criar instância');
@@ -120,24 +114,7 @@ function CreateInstanceDialog({ onClose, onCreate }: { onClose: () => void; onCr
         </div>
 
         <form onSubmit={submit} className="p-6 space-y-4">
-          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex gap-2">
-            <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-            <p className="text-xs text-blue-600">
-              Você precisa de um <strong>WPP-Connect Server</strong> rodando. O servidor gera tokens e expõe uma API REST que será utilizada para envio/recebimento de mensagens.
-            </p>
-          </div>
-
           <Input label="Nome da Instância" placeholder="Atendimento Principal" value={form.name} onChange={set('name')} required />
-          <Input
-            label="Nome da Sessão"
-            placeholder="atendimento_principal"
-            value={form.sessionName}
-            onChange={set('sessionName')}
-            required
-          />
-          <div className="text-xs text-muted-foreground -mt-2">
-            Apenas letras minúsculas, números e underscore. Deve ser único.
-          </div>
           <Input
             label="URL do WPP-Connect Server"
             placeholder="http://seu-servidor:21465"
