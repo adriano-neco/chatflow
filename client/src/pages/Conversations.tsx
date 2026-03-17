@@ -1055,8 +1055,7 @@ export function Conversations() {
         )} style={{ background: 'var(--chat-bg)' }}>
 
           {/* Page title */}
-          <div className="flex items-center justify-between px-4 py-3 shrink-0"
-            style={{ background: 'var(--chat-surface)', borderBottom: '1px solid rgba(42,57,66,0.8)' }}>
+          <div className="flex items-center justify-between px-4 shrink-0" style={{ height: 60, background: 'var(--chat-surface)', borderBottom: '1px solid var(--chat-border)' }}>
             <h1 className="text-[16px] font-semibold" style={{ color: 'var(--chat-text-primary)' }}>Conversas</h1>
             <div className="flex items-center gap-1">
               <button className="p-2 rounded-full hover:bg-[var(--chat-active)] transition-colors" style={{ color: 'var(--chat-icon)' }} title="Menu">
@@ -1263,7 +1262,7 @@ export function Conversations() {
                                 onContextMenu={e => handleContextMenu(e, msg)}
                                 style={{
                                   background: isOut ? 'var(--chat-bubble-out)' : 'var(--chat-bubble-in)',
-                                  borderRadius: showTail ? (isOut ? '12px 4px 12px 12px' : '4px 12px 12px 12px') : '12px',
+                                  borderRadius: showTail ? (isOut ? '12px 0 12px 12px' : '0 12px 12px 12px') : '12px',
                                   boxShadow: '0 1px 3px rgba(0,0,0,.4)',
                                   overflow: 'hidden',
                                   cursor: 'context-menu',
