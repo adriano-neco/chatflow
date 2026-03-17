@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import { cn, getInitials } from '@/lib/utils';
-import { MessageSquare, Users, Settings, PieChart, Bell, Search, LogOut, Menu } from 'lucide-react';
+import { MessageSquare, Users, Settings, PieChart, Bell, Search, LogOut, Menu, Sun, Moon } from 'lucide-react';
 import { Avatar } from '@/components/ui';
 import { useAuth } from '@/hooks/use-app-data';
+import { useTheme } from '@/hooks/use-theme';
 
 const NAV_ITEMS = [
   { icon: MessageSquare, label: 'Conversas', href: '/conversations' },
@@ -17,15 +18,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { theme, toggle } = useTheme();
 
   return (
     <div className="flex flex-col h-screen w-full bg-background overflow-hidden">
-      {/* Full-width Header — unified bg matching sidebar */}
+      {/* Full-width Header */}
       <header className="h-16 flex items-center justify-between bg-sidebar border-b border-sidebar-border/40 sticky top-0 z-20 w-full shrink-0">
 
         {/* Left: logo + menu + search */}
         <div className="flex items-center gap-3 h-full">
-          {/* Logo area — same width as sidebar */}
+          {/* Logo area */}
           <div
             className={cn(
               'flex items-center gap-3 h-full px-4 border-r border-sidebar-border/40 shrink-0 transition-all duration-300',
@@ -60,8 +62,21 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Right: notifications + user + logout */}
+        {/* Right: theme toggle + notifications + user + logout */}
         <div className="flex items-center gap-2 px-4">
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggle}
+            title={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
+            className="p-2 rounded-full hover:bg-sidebar-accent text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+          >
+            {theme === 'dark'
+              ? <Sun className="w-5 h-5" />
+              : <Moon className="w-5 h-5" />
+            }
+          </button>
+
           <button className="relative p-2 rounded-full hover:bg-sidebar-accent text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-sidebar"></span>
@@ -95,7 +110,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar + Content row */}
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar — no logo section anymore */}
         <aside
           className={cn(
             'flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300 z-10 shrink-0',
@@ -112,8 +126,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   className={cn(
                     'flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative',
                     isActive
-                      ? 'bg-sidebar-accent text-white font-medium'
-                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-white',
+                      ? 'bg-sidebar-accent text-sidebar-foreground font-medium'
+                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
                   )}
                   title={!isSidebarOpen ? item.label : undefined}
                 >
@@ -135,7 +149,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Avatar initials={user ? getInitials(user.name) : 'U'} status="online" className="ring-sidebar-border border border-sidebar-border" />
               {isSidebarOpen && (
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-medium text-white truncate">{user?.name}</span>
+                  <span className="text-sm font-medium text-sidebar-foreground truncate">{user?.name}</span>
                   <span className="text-xs text-sidebar-foreground/60 truncate">{user?.role}</span>
                 </div>
               )}

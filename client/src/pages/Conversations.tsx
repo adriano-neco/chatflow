@@ -277,11 +277,11 @@ function AudioMsgPlayer({ src, isOut }: { src: string; isOut: boolean }) {
           <div className="h-full rounded-full" style={{ width: `${progress * 100}%`, background: '#00A884' }} />
         </div>
         <div className="flex justify-between">
-          <span className="text-[11px]" style={{ color: '#8696A0' }}>{formatDuration((audioRef.current?.currentTime || 0))}</span>
-          <span className="text-[11px]" style={{ color: '#8696A0' }}>{formatDuration(duration)}</span>
+          <span className="text-[11px]" style={{ color: 'var(--chat-text-secondary)' }}>{formatDuration((audioRef.current?.currentTime || 0))}</span>
+          <span className="text-[11px]" style={{ color: 'var(--chat-text-secondary)' }}>{formatDuration(duration)}</span>
         </div>
       </div>
-      <Mic className="w-4 h-4 shrink-0" style={{ color: '#8696A0' }} />
+      <Mic className="w-4 h-4 shrink-0" style={{ color: 'var(--chat-text-secondary)' }} />
     </div>
   );
 }
@@ -374,12 +374,12 @@ function DocumentMsg({ src, name, size }: { src: string; name: string; size: num
         <span className="text-white text-[9px] font-bold mt-0.5">{ext}</span>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-medium truncate" style={{ color: '#E9EDEF' }}>{name}</p>
-        <p className="text-[11px]" style={{ color: '#8696A0' }}>{formatBytes(size)}</p>
+        <p className="text-[13px] font-medium truncate" style={{ color: 'var(--chat-text-primary)' }}>{name}</p>
+        <p className="text-[11px]" style={{ color: 'var(--chat-text-secondary)' }}>{formatBytes(size)}</p>
       </div>
       <a href={src} download={name} target="_blank" rel="noreferrer"
         className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
-        <Download className="w-4 h-4" style={{ color: '#8696A0' }} />
+        <Download className="w-4 h-4" style={{ color: 'var(--chat-text-secondary)' }} />
       </a>
     </div>
   );
@@ -416,9 +416,9 @@ function AttachmentGrid({ onFile, onClose }: { onFile: (type: string, file: File
     <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.95 }} transition={{ duration: 0.18, ease: 'easeOut' }}
       className="absolute bottom-[72px] left-3 z-50 w-[280px] rounded-2xl shadow-2xl overflow-hidden"
-      style={{ background: '#1B2B34', border: '1px solid #2A3942' }}>
+      style={{ background: 'var(--chat-surface2)', border: '1px solid var(--chat-active)' }}>
       <div className="px-4 pt-4 pb-2">
-        <p className="text-[12px] font-semibold uppercase tracking-wider" style={{ color: '#8696A0' }}>Enviar arquivo</p>
+        <p className="text-[12px] font-semibold uppercase tracking-wider" style={{ color: 'var(--chat-text-secondary)' }}>Enviar arquivo</p>
       </div>
       <div className="grid grid-cols-3 gap-3 p-3">
         {ATTACH_ITEMS.map(item => (
@@ -427,7 +427,7 @@ function AttachmentGrid({ onFile, onClose }: { onFile: (type: string, file: File
             <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-md" style={{ background: item.bg }}>
               <item.icon className="w-6 h-6 text-white" />
             </div>
-            <span className="text-[11px] font-medium" style={{ color: '#AEBAC1' }}>{item.label}</span>
+            <span className="text-[11px] font-medium" style={{ color: 'var(--chat-icon)' }}>{item.label}</span>
           </button>
         ))}
       </div>
@@ -493,7 +493,7 @@ function AudioRecorder({ onDone, onCancel }: { onDone: (blob: Blob, duration: nu
 
   return (
     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-      className="flex items-center gap-3 px-3 py-2 rounded-full flex-1" style={{ background: '#2A3942' }}>
+      className="flex items-center gap-3 px-3 py-2 rounded-full flex-1" style={{ background: 'var(--chat-active)' }}>
       <button onClick={onCancel} className="p-1.5 rounded-full transition-colors" style={{ background: 'rgba(235,51,82,0.15)', color: '#EB3352' }}>
         <X className="w-4 h-4" />
       </button>
@@ -518,7 +518,7 @@ function EmojiQuickBar({ onReact }: { onReact: (emoji: string) => void }) {
     <motion.div initial={{ opacity: 0, scale: 0.8, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.8, y: 6 }} transition={{ duration: 0.12 }}
       className="flex items-center gap-0.5 px-2 py-1.5 rounded-full shadow-xl z-50"
-      style={{ background: '#1B2B34', border: '1px solid #2A3942' }}>
+      style={{ background: 'var(--chat-surface2)', border: '1px solid var(--chat-active)' }}>
       {QUICK_EMOJIS.map(e => (
         <button key={e} onClick={() => onReact(e)}
           className="w-9 h-9 flex items-center justify-center rounded-full hover:scale-125 active:scale-110 transition-transform text-xl">
@@ -562,12 +562,12 @@ function MessageContextMenu({ pos, onClose, onReply, onReact, onForward, onCopy 
       <motion.div ref={menuRef} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.1 }}
         className="rounded-xl shadow-2xl overflow-hidden py-1 w-44"
-        style={{ background: '#1B2B34', border: '1px solid #2A3942' }}>
+        style={{ background: 'var(--chat-surface2)', border: '1px solid var(--chat-active)' }}>
         {items.map((item, i) => (
           <button key={i} onClick={() => { item.action(); onClose(); }}
             className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium transition-colors hover:bg-white/5"
-            style={{ color: '#E9EDEF' }}>
-            <item.icon className="w-4 h-4 shrink-0" style={{ color: '#8696A0' }} />
+            style={{ color: 'var(--chat-text-primary)' }}>
+            <item.icon className="w-4 h-4 shrink-0" style={{ color: 'var(--chat-text-secondary)' }} />
             {item.label}
           </button>
         ))}
@@ -596,7 +596,7 @@ function ReactionsBar({ reactions, currentUserId, onReact }: {
           className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[12px] font-medium transition-all hover:scale-105"
           style={{ background: byMe ? 'rgba(0,168,132,0.25)' : 'rgba(255,255,255,0.1)', border: `1px solid ${byMe ? '#00A884' : 'rgba(255,255,255,0.15)'}` }}>
           <span>{emoji}</span>
-          {count > 1 && <span style={{ color: '#E9EDEF' }}>{count}</span>}
+          {count > 1 && <span style={{ color: 'var(--chat-text-primary)' }}>{count}</span>}
         </button>
       ))}
     </div>
@@ -630,24 +630,24 @@ function ForwardModal({ conversations, onClose, onForward }: {
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }} transition={{ duration: 0.2 }}
         className="rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
-        style={{ background: '#1B2B34', border: '1px solid #2A3942', maxHeight: '80vh' }}>
+        style={{ background: 'var(--chat-surface2)', border: '1px solid var(--chat-active)', maxHeight: '80vh' }}>
 
-        <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: '1px solid #2A3942' }}>
+        <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: '1px solid var(--chat-active)' }}>
           <div className="flex items-center gap-2">
             <Forward className="w-5 h-5" style={{ color: '#00A884' }} />
-            <h2 className="text-[16px] font-semibold" style={{ color: '#E9EDEF' }}>Encaminhar para</h2>
+            <h2 className="text-[16px] font-semibold" style={{ color: 'var(--chat-text-primary)' }}>Encaminhar para</h2>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
-            <X className="w-4 h-4" style={{ color: '#8696A0' }} />
+            <X className="w-4 h-4" style={{ color: 'var(--chat-text-secondary)' }} />
           </button>
         </div>
 
-        <div className="px-4 py-3 shrink-0" style={{ borderBottom: '1px solid #2A3942' }}>
-          <div className="flex items-center gap-2 px-3 h-9 rounded-lg" style={{ background: '#0B141A' }}>
-            <Search className="w-4 h-4 shrink-0" style={{ color: '#8696A0' }} />
+        <div className="px-4 py-3 shrink-0" style={{ borderBottom: '1px solid var(--chat-active)' }}>
+          <div className="flex items-center gap-2 px-3 h-9 rounded-lg" style={{ background: 'var(--chat-wallpaper)' }}>
+            <Search className="w-4 h-4 shrink-0" style={{ color: 'var(--chat-text-secondary)' }} />
             <input type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Pesquisar conversa..." className="flex-1 bg-transparent text-[13px] focus:outline-none"
-              style={{ color: '#E9EDEF' }} />
+              style={{ color: 'var(--chat-text-primary)' }} />
           </div>
         </div>
 
@@ -660,8 +660,8 @@ function ForwardModal({ conversations, onClose, onForward }: {
                 <ContactAvatar name={conv.contact.name} size={40} />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-[14px] font-medium truncate" style={{ color: '#E9EDEF' }}>{conv.contact.name}</p>
-                <p className="text-[12px] truncate" style={{ color: '#8696A0' }}>{conv.lastMessage?.content || conv.subject || 'Nova conversa'}</p>
+                <p className="text-[14px] font-medium truncate" style={{ color: 'var(--chat-text-primary)' }}>{conv.contact.name}</p>
+                <p className="text-[12px] truncate" style={{ color: 'var(--chat-text-secondary)' }}>{conv.lastMessage?.content || conv.subject || 'Nova conversa'}</p>
               </div>
               <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
                 selected.has(conv.id) ? "border-[#00A884] bg-[#00A884]" : "border-[#8696A0]")}>
@@ -671,20 +671,20 @@ function ForwardModal({ conversations, onClose, onForward }: {
           ))}
           {filtered.length === 0 && (
             <div className="flex items-center justify-center py-12">
-              <p className="text-[13px]" style={{ color: '#8696A0' }}>Nenhuma conversa encontrada</p>
+              <p className="text-[13px]" style={{ color: 'var(--chat-text-secondary)' }}>Nenhuma conversa encontrada</p>
             </div>
           )}
         </div>
 
-        <div className="px-4 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid #2A3942' }}>
-          <span className="text-[13px]" style={{ color: '#8696A0' }}>
+        <div className="px-4 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid var(--chat-active)' }}>
+          <span className="text-[13px]" style={{ color: 'var(--chat-text-secondary)' }}>
             {selected.size > 0 ? `${selected.size} selecionada${selected.size > 1 ? 's' : ''}` : 'Selecione conversas'}
           </span>
           <button
             onClick={() => { if (selected.size > 0) { onForward(Array.from(selected)); onClose(); } }}
             disabled={selected.size === 0}
             className="flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-semibold transition-all"
-            style={{ background: selected.size > 0 ? '#00A884' : '#2A3942', color: selected.size > 0 ? '#fff' : '#8696A0' }}>
+            style={{ background: selected.size > 0 ? '#00A884' : 'var(--chat-active)', color: selected.size > 0 ? '#fff' : 'var(--chat-text-secondary)' }}>
             <ArrowRightCircle className="w-4 h-4" />
             Encaminhar
           </button>
@@ -726,17 +726,17 @@ function ReplyBar({ replyTo, onCancel }: { replyTo: ChatMessage; onCancel: () =>
     : replyTo.content;
 
   return (
-    <div className="flex items-center gap-2 px-3 pt-2 pb-1 shrink-0" style={{ borderTop: '1px solid #2A3942' }}>
-      <div className="flex-1 flex items-start gap-2 rounded-lg px-3 py-2" style={{ background: '#0B141A', borderLeft: '3px solid #00A884' }}>
+    <div className="flex items-center gap-2 px-3 pt-2 pb-1 shrink-0" style={{ borderTop: '1px solid var(--chat-active)' }}>
+      <div className="flex-1 flex items-start gap-2 rounded-lg px-3 py-2" style={{ background: 'var(--chat-wallpaper)', borderLeft: '3px solid #00A884' }}>
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold mb-0.5" style={{ color: '#00A884' }}>
             {isOut ? 'Você' : 'Contato'}
           </p>
-          <p className="text-[12px] truncate" style={{ color: '#8696A0' }}>{preview}</p>
+          <p className="text-[12px] truncate" style={{ color: 'var(--chat-text-secondary)' }}>{preview}</p>
         </div>
       </div>
       <button onClick={onCancel} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors shrink-0">
-        <X className="w-3.5 h-3.5" style={{ color: '#8696A0' }} />
+        <X className="w-3.5 h-3.5" style={{ color: 'var(--chat-text-secondary)' }} />
       </button>
     </div>
   );
@@ -991,7 +991,7 @@ export function Conversations() {
   return (
     <AppLayout>
       <div className="flex h-full w-full overflow-hidden select-none"
-        style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif", background: '#111B21' }}
+        style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif", background: 'var(--chat-bg)' }}
         onClick={() => { setContextMenu(null); setEmojiPickerTarget(null); }}>
 
         {/* Context menu */}
@@ -1015,9 +1015,9 @@ export function Conversations() {
               onClick={() => setReactionTarget(null)}>
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }} className="p-4 rounded-2xl shadow-2xl"
-                style={{ background: '#1B2B34', border: '1px solid #2A3942' }}
+                style={{ background: 'var(--chat-surface2)', border: '1px solid var(--chat-active)' }}
                 onClick={e => e.stopPropagation()}>
-                <p className="text-[12px] font-medium mb-3 text-center" style={{ color: '#8696A0' }}>Reagir</p>
+                <p className="text-[12px] font-medium mb-3 text-center" style={{ color: 'var(--chat-text-secondary)' }}>Reagir</p>
                 <div className="grid grid-cols-4 gap-2">
                   {[...QUICK_EMOJIS, '🎉', '💯', '👏', '😍', '😡', '😱', '🤔', '💔'].map(e => (
                     <button key={e} onClick={() => { handleReact(reactionTarget, e); setReactionTarget(null); }}
@@ -1050,38 +1050,38 @@ export function Conversations() {
         {/* ══ LEFT SIDEBAR ═══════════════════════════════════════ */}
         <div className={cn(
           "flex flex-col shrink-0 transition-all duration-200",
-          "border-r border-[#2A3942]",
+          "border-r border-[var(--chat-active)]",
           selectedId ? "hidden md:flex w-[360px]" : "flex w-full md:w-[360px]"
-        )} style={{ background: '#111B21' }}>
+        )} style={{ background: 'var(--chat-bg)' }}>
 
           {/* Page title */}
           <div className="flex items-center justify-between px-4 py-3 shrink-0"
-            style={{ background: '#202C33', borderBottom: '1px solid rgba(42,57,66,0.8)' }}>
-            <h1 className="text-[16px] font-semibold" style={{ color: '#E9EDEF' }}>Conversas</h1>
+            style={{ background: 'var(--chat-surface)', borderBottom: '1px solid rgba(42,57,66,0.8)' }}>
+            <h1 className="text-[16px] font-semibold" style={{ color: 'var(--chat-text-primary)' }}>Conversas</h1>
             <div className="flex items-center gap-1">
-              <button className="p-2 rounded-full hover:bg-[#2A3942] transition-colors" style={{ color: '#AEBAC1' }} title="Menu">
+              <button className="p-2 rounded-full hover:bg-[var(--chat-active)] transition-colors" style={{ color: 'var(--chat-icon)' }} title="Menu">
                 <MoreVertical className="w-5 h-5" />
               </button>
             </div>
           </div>
 
           {/* Search */}
-          <div className="px-3 py-2 shrink-0" style={{ background: '#111B21' }}>
-            <div className="flex items-center gap-2 px-3 h-9 rounded-lg" style={{ background: '#202C33' }}>
-              <Search className="w-4 h-4 shrink-0" style={{ color: '#8696A0' }} />
+          <div className="px-3 py-2 shrink-0" style={{ background: 'var(--chat-bg)' }}>
+            <div className="flex items-center gap-2 px-3 h-9 rounded-lg" style={{ background: 'var(--chat-surface)' }}>
+              <Search className="w-4 h-4 shrink-0" style={{ color: 'var(--chat-text-secondary)' }} />
               <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Pesquisar conversas" className="flex-1 bg-transparent text-[13px] focus:outline-none"
-                style={{ color: '#E9EDEF' }} />
-              {search && <button onClick={() => setSearch('')}><X className="w-4 h-4" style={{ color: '#8696A0' }} /></button>}
+                style={{ color: 'var(--chat-text-primary)' }} />
+              {search && <button onClick={() => setSearch('')}><X className="w-4 h-4" style={{ color: 'var(--chat-text-secondary)' }} /></button>}
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex shrink-0" style={{ background: '#111B21', borderBottom: '1px solid #2A3942' }}>
+          <div className="flex shrink-0" style={{ background: 'var(--chat-bg)', borderBottom: '1px solid var(--chat-active)' }}>
             {[{ id: 'all', label: 'Todas' }, { id: 'unread', label: 'Não lidas' }, { id: 'groups', label: 'Grupos' }].map(tab => (
               <button key={tab.id} onClick={() => setSidebarTab(tab.id as any)}
                 className="flex-1 py-2.5 text-[13px] font-medium transition-colors relative"
-                style={{ color: sidebarTab === tab.id ? '#00A884' : '#8696A0' }}>
+                style={{ color: sidebarTab === tab.id ? '#00A884' : 'var(--chat-text-secondary)' }}>
                 {tab.label}
                 {sidebarTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-t" style={{ background: '#00A884' }} />}
               </button>
@@ -1089,34 +1089,34 @@ export function Conversations() {
           </div>
 
           {/* Filter chips */}
-          <div className="flex gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar shrink-0" style={{ background: '#111B21' }}>
+          <div className="flex gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar shrink-0" style={{ background: 'var(--chat-bg)' }}>
             {[{ id: 'all', label: 'Todas' }, { id: 'open', label: 'Abertas' }, { id: 'pending', label: 'Pendentes' }, { id: 'resolved', label: 'Resolvidas' }].map(f => (
               <button key={f.id} onClick={() => setActiveFilter(f.id)}
                 className="px-3 py-1 rounded-full text-[12px] font-medium whitespace-nowrap transition-all shrink-0"
                 style={activeFilter === f.id
                   ? { background: 'rgba(0,168,132,0.15)', color: '#00A884', border: '1px solid #00A884' }
-                  : { background: '#202C33', color: '#8696A0', border: '1px solid transparent' }}>
+                  : { background: 'var(--chat-surface)', color: 'var(--chat-text-secondary)', border: '1px solid transparent' }}>
                 {f.label}
               </button>
             ))}
           </div>
 
           {/* Conversation list */}
-          <div className="flex-1 overflow-y-auto" style={{ background: '#111B21' }}>
+          <div className="flex-1 overflow-y-auto" style={{ background: 'var(--chat-bg)' }}>
             {isLoading ? (
               [...Array(6)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3 px-4 py-3 border-b border-[#2A3942]">
-                  <div className="w-12 h-12 rounded-full shrink-0 animate-pulse" style={{ background: '#202C33' }} />
+                <div key={i} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--chat-active)]">
+                  <div className="w-12 h-12 rounded-full shrink-0 animate-pulse" style={{ background: 'var(--chat-surface)' }} />
                   <div className="flex-1 space-y-2">
-                    <div className="h-3 rounded animate-pulse" style={{ background: '#202C33', width: '60%' }} />
-                    <div className="h-2.5 rounded animate-pulse" style={{ background: '#202C33', width: '40%' }} />
+                    <div className="h-3 rounded animate-pulse" style={{ background: 'var(--chat-surface)', width: '60%' }} />
+                    <div className="h-2.5 rounded animate-pulse" style={{ background: 'var(--chat-surface)', width: '40%' }} />
                   </div>
                 </div>
               ))
             ) : filteredConvs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-48 gap-3">
-                <Inbox className="w-12 h-12" style={{ color: '#2A3942' }} />
-                <p className="text-[13px]" style={{ color: '#8696A0' }}>Nenhuma conversa encontrada</p>
+                <Inbox className="w-12 h-12" style={{ color: 'var(--chat-active)' }} />
+                <p className="text-[13px]" style={{ color: 'var(--chat-text-secondary)' }}>Nenhuma conversa encontrada</p>
               </div>
             ) : (
               filteredConvs.map(conv => {
@@ -1124,26 +1124,26 @@ export function Conversations() {
                 return (
                   <button key={conv.id} onClick={() => navigate(`/conversations/${conv.id}`)}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors relative border-b"
-                    style={{ background: isActive ? '#2A3942' : 'transparent', borderColor: '#1A2730' }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#182229'; }}
+                    style={{ background: isActive ? 'var(--chat-active)' : 'transparent', borderColor: 'var(--chat-border)' }}
+                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--chat-hover)'; }}
                     onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}>
                     {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r" style={{ background: '#00A884' }} />}
                     <div className="relative shrink-0">
                       <ContactAvatar name={conv.contact.name} size={48} />
                       {conv.status === 'open' && (
                         <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center"
-                          style={{ background: '#25D366', borderColor: isActive ? '#2A3942' : '#111B21' }} />
+                          style={{ background: '#25D366', borderColor: isActive ? 'var(--chat-active)' : 'var(--chat-bg)' }} />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline justify-between mb-0.5">
-                        <span className="text-[15px] font-medium truncate" style={{ color: '#E9EDEF' }}>{conv.contact.name}</span>
-                        <span className="text-[11px] ml-2 shrink-0" style={{ color: conv.unreadCount > 0 ? '#00A884' : '#8696A0' }}>
+                        <span className="text-[15px] font-medium truncate" style={{ color: 'var(--chat-text-primary)' }}>{conv.contact.name}</span>
+                        <span className="text-[11px] ml-2 shrink-0" style={{ color: conv.unreadCount > 0 ? '#00A884' : 'var(--chat-text-secondary)' }}>
                           {formatConvTime(conv.updatedAt)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-[13px] truncate flex-1" style={{ color: '#8696A0' }}>
+                        <p className="text-[13px] truncate flex-1" style={{ color: 'var(--chat-text-secondary)' }}>
                           {conv.lastMessage?.content || conv.subject || 'Nova conversa'}
                         </p>
                         {conv.unreadCount > 0 && (
@@ -1167,31 +1167,31 @@ export function Conversations() {
 
         {/* ══ CHAT AREA ══════════════════════════════════════════ */}
         <div className={cn("flex-1 flex flex-col min-w-0 relative", !selectedId ? "hidden md:flex" : "flex")}
-          style={{ background: '#0B141A' }}>
+          style={{ background: 'var(--chat-wallpaper)' }}>
 
           {selectedConv ? (
             <>
               {/* Chat header */}
               <div className="flex items-center gap-3 px-4 py-2.5 shrink-0 z-10 shadow-md"
-                style={{ background: '#202C33', borderBottom: '1px solid #2A3942' }}>
+                style={{ background: 'var(--chat-surface)', borderBottom: '1px solid var(--chat-active)' }}>
                 <button onClick={() => navigate('/conversations')}
-                  className="md:hidden p-1.5 rounded-full hover:bg-[#2A3942] transition-colors mr-1"
-                  style={{ color: '#AEBAC1' }}>
+                  className="md:hidden p-1.5 rounded-full hover:bg-[var(--chat-active)] transition-colors mr-1"
+                  style={{ color: 'var(--chat-icon)' }}>
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <ContactAvatar name={selectedConv.contact.name} size={40} />
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-[15px] font-semibold truncate" style={{ color: '#E9EDEF' }}>{selectedConv.contact.name}</h2>
+                  <h2 className="text-[15px] font-semibold truncate" style={{ color: 'var(--chat-text-primary)' }}>{selectedConv.contact.name}</h2>
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full" style={{ background: statusColors[selectedConv.status] }} />
-                    <span className="text-[12px]" style={{ color: '#8696A0' }}>{statusLabels[selectedConv.status] || selectedConv.status}</span>
-                    <span style={{ color: '#2A3942' }}>·</span>
+                    <span className="text-[12px]" style={{ color: 'var(--chat-text-secondary)' }}>{statusLabels[selectedConv.status] || selectedConv.status}</span>
+                    <span style={{ color: 'var(--chat-active)' }}>·</span>
                     <ChannelBadge channel={selectedConv.channel} />
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
                   {[Video, Phone, Search, MoreVertical].map((Icon, i) => (
-                    <button key={i} className="p-2 rounded-full hover:bg-[#2A3942] transition-colors" style={{ color: '#AEBAC1' }}>
+                    <button key={i} className="p-2 rounded-full hover:bg-[var(--chat-active)] transition-colors" style={{ color: 'var(--chat-icon)' }}>
                       <Icon className="w-5 h-5" />
                     </button>
                   ))}
@@ -1199,14 +1199,14 @@ export function Conversations() {
               </div>
 
               {/* Messages area */}
-              <div className="flex-1 overflow-y-auto relative px-4 py-4" style={{ background: '#0B141A' }}>
+              <div className="flex-1 overflow-y-auto relative px-4 py-4" style={{ background: 'var(--chat-wallpaper)' }}>
                 <ChatBg />
                 <div className="relative z-10 space-y-[2px]">
                   {groupedMessages.map((group, gi) => (
                     <React.Fragment key={gi}>
                       <div className="flex justify-center my-5">
                         <span className="px-3 py-1 rounded-lg text-[12px] font-medium shadow"
-                          style={{ background: '#182229', color: '#8696A0' }}>
+                          style={{ background: 'var(--chat-hover)', color: 'var(--chat-text-secondary)' }}>
                           {formatMsgDate(group.date)}
                         </span>
                       </div>
@@ -1235,7 +1235,7 @@ export function Conversations() {
                               <div className="flex items-center self-end mb-1 mr-1">
                                 <button onClick={() => setReactionTarget(msg)}
                                   className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                  style={{ color: '#8696A0' }}>
+                                  style={{ color: 'var(--chat-text-secondary)' }}>
                                   <Smile className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1247,14 +1247,14 @@ export function Conversations() {
                                 <svg viewBox="0 0 8 13" width="8" height="13"
                                   style={{ position: 'absolute', top: 0, right: -8, display: 'block' }}>
                                   <path opacity="0.13" fill="#000" d="M5.188 0H6c0 2.394-.384 5.729-2.547 7.339C1.985 8.63.549 9.229 0 10.306v2.695c.275-.751.775-1.256 1.555-1.459C2.547 11.32 5.15 9.547 5.79 7.26 6.44 4.973 5.188 0 5.188 0z" />
-                                  <path fill="#005C4B" d="M5.188 0c0 2.394-.384 5.729-2.547 7.339C1.985 8.63.549 9.229 0 10.306V2L5.188 0z" />
+                                  <path style={{fill:'var(--chat-bubble-out)'}} d="M5.188 0c0 2.394-.384 5.729-2.547 7.339C1.985 8.63.549 9.229 0 10.306V2L5.188 0z" />
                                 </svg>
                               )}
                               {showTail && !isOut && (
                                 <svg viewBox="0 0 8 13" width="8" height="13"
                                   style={{ position: 'absolute', top: 0, left: -8, display: 'block' }}>
                                   <path opacity="0.13" fill="#000" d="M2.812 0H2C2 2.394 2.384 5.729 4.547 7.339c1.468 1.291 2.904 1.89 3.453 2.967v2.695c-.275-.751-.775-1.256-1.555-1.459C5.453 11.32 2.85 9.547 2.21 7.26 1.56 4.973 2.812 0 2.812 0z" />
-                                  <path fill="#202C33" d="M2.812 0c0 2.394.384 5.729 2.547 7.339 1.468 1.291 2.904 1.89 3.453 2.967V2L2.812 0z" />
+                                  <path style={{fill:'var(--chat-bubble-in)'}} d="M2.812 0c0 2.394.384 5.729 2.547 7.339 1.468 1.291 2.904 1.89 3.453 2.967V2L2.812 0z" />
                                 </svg>
                               )}
 
@@ -1262,7 +1262,7 @@ export function Conversations() {
                               <div
                                 onContextMenu={e => handleContextMenu(e, msg)}
                                 style={{
-                                  background: isOut ? '#005C4B' : '#202C33',
+                                  background: isOut ? 'var(--chat-bubble-out)' : 'var(--chat-bubble-in)',
                                   borderRadius: showTail ? (isOut ? '12px 4px 12px 12px' : '4px 12px 12px 12px') : '12px',
                                   boxShadow: '0 1px 3px rgba(0,0,0,.4)',
                                   overflow: 'hidden',
@@ -1271,7 +1271,7 @@ export function Conversations() {
 
                                 {/* Forwarded indicator */}
                                 {msg.isForwarded && (
-                                  <div className="flex items-center gap-1.5 px-3 pt-2 pb-0.5" style={{ color: '#8696A0' }}>
+                                  <div className="flex items-center gap-1.5 px-3 pt-2 pb-0.5" style={{ color: 'var(--chat-text-secondary)' }}>
                                     <Forward className="w-3 h-3" />
                                     <span className="text-[11px] italic">Encaminhada</span>
                                   </div>
@@ -1284,7 +1284,7 @@ export function Conversations() {
                                       <p className="text-[11px] font-semibold mb-0.5" style={{ color: '#00A884' }}>
                                         {msg.replyTo.messageType === 'outgoing' ? 'Você' : selectedConv.contact.name}
                                       </p>
-                                      <p className="text-[12px] line-clamp-2" style={{ color: '#8696A0' }}>
+                                      <p className="text-[12px] line-clamp-2" style={{ color: 'var(--chat-text-secondary)' }}>
                                         {msg.replyTo.hasAttachment
                                           ? msg.replyTo.attachmentType === 'image' ? '🖼 Imagem'
                                           : msg.replyTo.attachmentType === 'video' ? '🎬 Vídeo'
@@ -1307,7 +1307,7 @@ export function Conversations() {
                                 {/* Text content */}
                                 {(msg.content && (hasAtt ? !msg.content.startsWith('📄') && !msg.content.startsWith('🖼') && !msg.content.startsWith('🎬') && !msg.content.startsWith('🎤') && !msg.content.startsWith('🎵') : true)) && (
                                   <div className={cn("px-3", hasAtt ? "pb-1 pt-1" : "pt-2 pb-1")}>
-                                    <p className="text-[14.5px] leading-[1.4] whitespace-pre-wrap break-words" style={{ color: '#E9EDEF' }}>
+                                    <p className="text-[14.5px] leading-[1.4] whitespace-pre-wrap break-words" style={{ color: 'var(--chat-text-primary)' }}>
                                       {msg.content}
                                     </p>
                                   </div>
@@ -1316,7 +1316,7 @@ export function Conversations() {
                                 {/* Metadata row: time + status */}
                                 <div className={cn("flex items-center justify-end gap-1 px-2 pb-1.5",
                                   hasAtt ? "pt-0.5 pr-2" : "pt-0")}>
-                                  <span className="text-[11px]" style={{ color: isOut ? 'rgba(233,238,239,0.6)' : '#8696A0' }}>{timeStr}</span>
+                                  <span className="text-[11px]" style={{ color: isOut ? 'var(--chat-time-out)' : 'var(--chat-text-secondary)' }}>{timeStr}</span>
                                   {isOut && <MessageStatusIcon status={msg.deliveryStatus} />}
                                 </div>
                               </div>
@@ -1337,17 +1337,17 @@ export function Conversations() {
                                 <div className={cn("absolute top-0 flex items-center gap-0.5", isOut ? "left-0 -translate-x-full pr-1" : "right-0 translate-x-full pl-1")}>
                                   <button onClick={() => setReactionTarget(msg)}
                                     className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                    style={{ color: '#8696A0' }}>
+                                    style={{ color: 'var(--chat-text-secondary)' }}>
                                     <Smile className="w-3.5 h-3.5" />
                                   </button>
                                   <button onClick={() => { setReplyTo(msg); setTimeout(() => textareaRef.current?.focus(), 50); }}
                                     className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                    style={{ color: '#8696A0' }}>
+                                    style={{ color: 'var(--chat-text-secondary)' }}>
                                     <Reply className="w-3.5 h-3.5" />
                                   </button>
                                   <button onClick={(e) => handleContextMenu(e, msg)}
                                     className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                    style={{ color: '#8696A0' }}>
+                                    style={{ color: 'var(--chat-text-secondary)' }}>
                                     <ChevronRight className="w-3.5 h-3.5" />
                                   </button>
                                 </div>
@@ -1359,7 +1359,7 @@ export function Conversations() {
                               <div className="flex items-center self-end mb-1 ml-1">
                                 <button onClick={() => setReactionTarget(msg)}
                                   className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                  style={{ color: '#8696A0' }}>
+                                  style={{ color: 'var(--chat-text-secondary)' }}>
                                   <Smile className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1374,7 +1374,7 @@ export function Conversations() {
               </div>
 
               {/* Input area */}
-              <div className="shrink-0 relative" style={{ background: '#202C33' }}>
+              <div className="shrink-0 relative" style={{ background: 'var(--chat-surface)' }}>
                 <AnimatePresence>
                   {showAttach && (
                     <AttachmentGrid onFile={handleAttachFile} onClose={() => setShowAttach(false)} />
@@ -1390,7 +1390,7 @@ export function Conversations() {
                   ) : (
                     <>
                       {/* Emoji button */}
-                      <button className="p-2.5 rounded-full transition-colors shrink-0" style={{ color: '#8696A0' }}
+                      <button className="p-2.5 rounded-full transition-colors shrink-0" style={{ color: 'var(--chat-text-secondary)' }}
                         onClick={() => setShowAttach(false)}>
                         <Smile className="w-6 h-6" />
                       </button>
@@ -1398,14 +1398,14 @@ export function Conversations() {
                       {/* Attach */}
                       <button onClick={() => setShowAttach(v => !v)}
                         className="p-2.5 rounded-full transition-colors shrink-0"
-                        style={{ color: showAttach ? '#00A884' : '#8696A0' }}>
+                        style={{ color: showAttach ? '#00A884' : 'var(--chat-text-secondary)' }}>
                         <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2}>
                           <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </button>
 
                       {/* Text area */}
-                      <div className="flex-1 flex items-end rounded-lg px-4 py-2" style={{ background: '#2A3942', minHeight: 42 }}
+                      <div className="flex-1 flex items-end rounded-lg px-4 py-2" style={{ background: 'var(--chat-input)', minHeight: 42 }}
                         onClick={() => setShowAttach(false)}>
                         <textarea
                           ref={textareaRef}
@@ -1414,7 +1414,7 @@ export function Conversations() {
                           onKeyDown={handleKeyDown}
                           placeholder="Digite uma mensagem"
                           className="w-full text-[15px] resize-none focus:outline-none bg-transparent leading-relaxed placeholder:text-[#8696A0]"
-                          style={{ color: '#E9EDEF', maxHeight: 120, minHeight: 24 }}
+                          style={{ color: 'var(--chat-text-primary)', maxHeight: 120, minHeight: 24 }}
                           rows={1}
                         />
                       </div>
@@ -1443,14 +1443,14 @@ export function Conversations() {
             </>
           ) : (
             /* Empty state */
-            <div className="flex-1 flex flex-col items-center justify-center gap-6" style={{ background: '#0B141A' }}>
+            <div className="flex-1 flex flex-col items-center justify-center gap-6" style={{ background: 'var(--chat-wallpaper)' }}>
               <div className="text-center">
                 <div className="w-36 h-36 rounded-full flex items-center justify-center mx-auto mb-6"
                   style={{ background: 'radial-gradient(circle, rgba(0,168,132,0.15), transparent)' }}>
                   <MessageSquare className="w-18 h-18" style={{ color: '#00A884', width: 72, height: 72 }} strokeWidth={1.2} />
                 </div>
-                <h2 className="text-[28px] font-light mb-3" style={{ color: '#E9EDEF' }}>ChatFlow</h2>
-                <p className="text-[14px] max-w-xs mx-auto leading-relaxed" style={{ color: '#8696A0' }}>
+                <h2 className="text-[28px] font-light mb-3" style={{ color: 'var(--chat-text-primary)' }}>ChatFlow</h2>
+                <p className="text-[14px] max-w-xs mx-auto leading-relaxed" style={{ color: 'var(--chat-text-secondary)' }}>
                   Selecione uma conversa ao lado para começar a atender seus clientes.
                 </p>
               </div>

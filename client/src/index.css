@@ -21,11 +21,26 @@
   --color-ring: hsl(var(--ring));
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
-  
+
   --color-sidebar: hsl(var(--sidebar));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-accent: hsl(var(--sidebar-accent));
   --color-sidebar-border: hsl(var(--sidebar-border));
+
+  /* Chat panel tokens — available as Tailwind utilities */
+  --color-chat-bg: var(--chat-bg);
+  --color-chat-surface: var(--chat-surface);
+  --color-chat-active: var(--chat-active);
+  --color-chat-hover: var(--chat-hover);
+  --color-chat-border: var(--chat-border);
+  --color-chat-wallpaper: var(--chat-wallpaper);
+  --color-chat-text-primary: var(--chat-text-primary);
+  --color-chat-text-secondary: var(--chat-text-secondary);
+  --color-chat-icon: var(--chat-icon);
+  --color-chat-bubble-out: var(--chat-bubble-out);
+  --color-chat-bubble-in: var(--chat-bubble-in);
+  --color-chat-input: var(--chat-input);
+  --color-chat-surface2: var(--chat-surface2);
 
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
@@ -33,69 +48,102 @@
   --radius-xl: 1rem;
 }
 
+/* ── Light mode ──────────────────────────────────────────── */
 :root {
-  /* Clean, light mode SaaS palette */
-  --background: 210 20% 98%; /* Light gray background */
+  --background: 210 20% 97%;
   --foreground: 222 47% 11%;
-  
-  /* WhatsApp Green Primary (darker) */
+
   --primary: 142 62% 33%;
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 210 40% 96%;
+
+  --secondary: 210 40% 94%;
   --secondary-foreground: 222 47% 11%;
-  
+
   --muted: 210 40% 92%;
   --muted-foreground: 215 16% 47%;
-  
+
   --accent: 210 40% 90%;
   --accent-foreground: 222 47% 11%;
-  
+
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
-  
-  --border: 214 32% 91%;
+
+  --border: 214 20% 88%;
   --ring: 142 62% 33%;
-  
+
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
 
-  /* Dark Sidebar */
-  --sidebar: 222 47% 11%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-accent: 217 33% 17%;
-  --sidebar-border: 220 20% 22%;
+  /* Sidebar — light, clean */
+  --sidebar: 210 25% 96%;
+  --sidebar-foreground: 222 47% 15%;
+  --sidebar-accent: 210 20% 90%;
+  --sidebar-border: 214 20% 84%;
+
+  /* Chat panel — WhatsApp Web light */
+  --chat-bg:            #F0F2F5;
+  --chat-surface:       #FFFFFF;
+  --chat-active:        #D9E5EC;
+  --chat-hover:         #F5F6F6;
+  --chat-border:        #D1D7DB;
+  --chat-wallpaper:     #EFEAE2;
+  --chat-text-primary:  #111B21;
+  --chat-text-secondary:#667781;
+  --chat-icon:          #54656F;
+  --chat-bubble-out:    #D9FDD3;
+  --chat-bubble-in:     #FFFFFF;
+  --chat-input:         #F0F2F5;
+  --chat-surface2:      #E9ECF0;
+  --chat-time-out:      rgba(17,27,33,0.55);
 }
 
+/* ── Dark mode ───────────────────────────────────────────── */
 .dark {
-  --background: 220 16% 18%;
+  --background: 222 18% 20%;
   --foreground: 210 20% 92%;
-  
-  --primary: 142 55% 38%;
+
+  --primary: 142 55% 40%;
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 220 14% 26%;
+
+  --secondary: 220 14% 28%;
   --secondary-foreground: 210 20% 92%;
-  
-  --muted: 220 14% 24%;
-  --muted-foreground: 215 16% 58%;
-  
-  --accent: 220 14% 26%;
+
+  --muted: 220 14% 26%;
+  --muted-foreground: 215 16% 60%;
+
+  --accent: 220 14% 28%;
   --accent-foreground: 210 20% 92%;
-  
-  --destructive: 0 62% 42%;
+
+  --destructive: 0 62% 44%;
   --destructive-foreground: 0 0% 100%;
-  
-  --border: 220 14% 28%;
-  --ring: 142 55% 38%;
-  
-  --card: 220 16% 22%;
+
+  --border: 220 14% 30%;
+  --ring: 142 55% 40%;
+
+  --card: 222 18% 24%;
   --card-foreground: 210 20% 92%;
 
-  --sidebar: 220 20% 13%;
-  --sidebar-foreground: 210 20% 88%;
-  --sidebar-accent: 220 16% 20%;
-  --sidebar-border: 220 16% 24%;
+  /* Sidebar — dark */
+  --sidebar: 222 22% 15%;
+  --sidebar-foreground: 210 20% 90%;
+  --sidebar-accent: 220 18% 22%;
+  --sidebar-border: 220 16% 26%;
+
+  /* Chat panel — WhatsApp Web dark (slightly lighter) */
+  --chat-bg:            #141E26;
+  --chat-surface:       #1F2C34;
+  --chat-active:        #2A3942;
+  --chat-hover:         #1A2631;
+  --chat-border:        #2A3942;
+  --chat-wallpaper:     #0D1B22;
+  --chat-text-primary:  #E9EDEF;
+  --chat-text-secondary:#8696A0;
+  --chat-icon:          #AEBAC1;
+  --chat-bubble-out:    #005C4B;
+  --chat-bubble-in:     #1F2C34;
+  --chat-input:         #2A3942;
+  --chat-surface2:      #1B2B34;
+  --chat-time-out:      rgba(233,238,239,0.6);
 }
 
 @layer base {
@@ -114,14 +162,9 @@
   }
 }
 
-/* Custom Scrollbar for sleek look */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 10px;
