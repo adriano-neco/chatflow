@@ -1229,17 +1229,6 @@ export function Conversations() {
                             onMouseEnter={() => setHoveredMsg(msg.id)}
                             onMouseLeave={() => setHoveredMsg(null)}>
 
-                            {/* Quick emoji reaction button on hover */}
-                            {hoveredMsg === msg.id && !isOut && (
-                              <div className="flex items-center self-end mb-1 mr-1">
-                                <button onClick={() => setReactionTarget(msg)}
-                                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                  style={{ color: 'var(--chat-text-secondary)' }}>
-                                  <Smile className="w-4 h-4" />
-                                </button>
-                              </div>
-                            )}
-
                             <div className="relative" style={{ maxWidth: 'min(68%, 520px)' }}>
                               {/* WhatsApp tail */}
                               {showTail && isOut && (
@@ -1331,38 +1320,32 @@ export function Conversations() {
                                 </div>
                               )}
 
-                              {/* Hover actions */}
+                              {/* Hover actions — above the bubble, no layout shift */}
                               {hoveredMsg === msg.id && (
-                                <div className={cn("absolute top-0 flex items-center gap-0.5", isOut ? "left-0 -translate-x-full pr-1" : "right-0 translate-x-full pl-1")}>
+                                <div className={cn(
+                                  "absolute bottom-full mb-1 flex items-center gap-0.5 px-1 py-0.5 rounded-full",
+                                  isOut ? "right-0" : "left-0"
+                                )}
+                                  style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(4px)' }}>
                                   <button onClick={() => setReactionTarget(msg)}
-                                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                    style={{ color: 'var(--chat-text-secondary)' }}>
+                                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                                    style={{ color: 'rgba(255,255,255,0.85)' }}>
                                     <Smile className="w-3.5 h-3.5" />
                                   </button>
                                   <button onClick={() => { setReplyTo(msg); setTimeout(() => textareaRef.current?.focus(), 50); }}
-                                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                    style={{ color: 'var(--chat-text-secondary)' }}>
+                                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                                    style={{ color: 'rgba(255,255,255,0.85)' }}>
                                     <Reply className="w-3.5 h-3.5" />
                                   </button>
                                   <button onClick={(e) => handleContextMenu(e, msg)}
-                                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                    style={{ color: 'var(--chat-text-secondary)' }}>
+                                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                                    style={{ color: 'rgba(255,255,255,0.85)' }}>
                                     <ChevronRight className="w-3.5 h-3.5" />
                                   </button>
                                 </div>
                               )}
                             </div>
 
-                            {/* Quick emoji reaction button on hover (outgoing side) */}
-                            {hoveredMsg === msg.id && isOut && (
-                              <div className="flex items-center self-end mb-1 ml-1">
-                                <button onClick={() => setReactionTarget(msg)}
-                                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
-                                  style={{ color: 'var(--chat-text-secondary)' }}>
-                                  <Smile className="w-4 h-4" />
-                                </button>
-                              </div>
-                            )}
                           </motion.div>
                         );
                       })}
